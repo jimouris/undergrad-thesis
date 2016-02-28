@@ -296,35 +296,39 @@
 
 
 \thesissection{Time Results}
-        \definecolor{mmaroon}{HTML}{800000}
-        \definecolor{rred}{HTML}{C0504D}
-        \definecolor{oorange}{HTML}{FFA500}
-        \definecolor{ggreen}{HTML}{9BBB59}
-        \definecolor{bblue}{HTML}{4F81BD}
-        \definecolor{ccyan}{HTML}{00FFFF}
+        \begin{figure}[H]
+            \centering
+            \definecolor{mmaroon}{HTML}{800000}
+            \definecolor{rred}{HTML}{C0504D}
+            \definecolor{oorange}{HTML}{FFA500}
+            \definecolor{ggreen}{HTML}{9BBB59}
+            \definecolor{bblue}{HTML}{4F81BD}
+            \definecolor{ccyan}{HTML}{00FFFF}
+            \begin{tikzpicture}
+                \begin{axis}[   width=\textwidth, height=12cm, major x tick style = transparent,
+                                ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)},
+                                symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false,
+                                enlarge x limits=0.25, ymin=0, legend cell align=left, 
+                                legend style={at={(1,1.05)}, anchor=south east, column sep=1ex}
+                            ]
+                    \addplot[style={mmaroon,fill=mmaroon,mark=none}]
+                        coordinates {(antlr, 75) (hsqldb, 83) (batik, 66)};
+                    \addplot[style={rred,fill=rred,mark=none}]
+                         coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
+                    \addplot[style={oorange,fill=oorange,mark=none}]
+                         coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
+                    \addplot[style={ggreen,fill=ggreen,mark=none}]
+                         coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
+                    \addplot[style={bblue,fill=bblue,mark=none}]
+                         coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
+                    \addplot[style={ccyan,fill=ccyan,mark=none}]
+                         coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
+                    \legend{Doop-Nexgen, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{Fact Generation Time Results}
+        \end{figure}
 
-        \begin{tikzpicture}
-            \begin{axis}[title=Fact Generation, width=\textwidth, height=12cm, major x tick style = transparent,
-                            ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)},
-                            symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false,
-                            enlarge x limits=0.25, ymin=0, legend cell align=left, 
-                            legend style={at={(1,1.05)}, anchor=south east, column sep=1ex}
-                        ]
-                \addplot[style={mmaroon,fill=mmaroon,mark=none}]
-                    coordinates {(antlr, 75) (hsqldb, 83) (batik, 66)};
-                \addplot[style={rred,fill=rred,mark=none}]
-                     coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
-                \addplot[style={oorange,fill=oorange,mark=none}]
-                     coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
-                \addplot[style={ggreen,fill=ggreen,mark=none}]
-                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-                \addplot[style={bblue,fill=bblue,mark=none}]
-                     coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
-                \addplot[style={ccyan,fill=ccyan,mark=none}]
-                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-                \legend{Doop-Nexgen, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
-            \end{axis}
-        \end{tikzpicture}
 
 
 \end{document}
