@@ -8,6 +8,7 @@
 \usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{listings}
+\usepackage{caption}
 
 \setallmainfonts[Mapping=tex-text]{Arial}
 \setallsansfonts[Mapping=tex-text]{Arial}
@@ -103,59 +104,41 @@
 
     \thesissubsection{Doop-Nexgen Time Examples}
         \begin{table}[H]
-        \centering
-        \caption{Soot 2.5.0 times}
-        \label{my-label}
-        \begin{tabular}{llll}
-        \hline
-        \textbf{Soot 2.5.0}      & \textbf{antlr.jar} & \textbf{hsqldb.jar} & \textbf{batik.jar} \\ \hline
-        \textbf{Fact Generation} & 1.16 min.          & 1.23 min.           & 2.26 min.          \\
-        \textbf{Total time}      & 3.18 min.          & 3.21 min.           & 4.34 min.          \\ \hline
-        \end{tabular}
+            \centering
+            \caption{Soot 2.5.0 times}
+            \label{my-label}
+            \begin{tabular}{llll}
+                \hline
+                \textbf{Soot 2.5.0}      & \textbf{antlr.jar} & \textbf{hsqldb.jar} & \textbf{batik.jar} \\ \hline
+                \textbf{Fact Generation} & 1.16 min.          & 1.23 min.           & 2.26 min.          \\
+                \textbf{Total time}      & 3.18 min.          & 3.21 min.           & 4.34 min.          \\ \hline
+            \end{tabular}
         \end{table}
 
-    \thesissubsection{Fact Generation Time Examples}
-        \definecolor{mmaroon}{HTML}{800000}
-        \definecolor{rred}{HTML}{C0504D}
-        \definecolor{oorange}{HTML}{FFA500}
-        \definecolor{ggreen}{HTML}{9BBB59}
-        \definecolor{bblue}{HTML}{4F81BD}
-        \definecolor{ccyan}{HTML}{00FFFF}
-
-        \begin{tikzpicture}
-            \begin{axis}[width = \textwidth, height = 12cm, major x tick style = transparent,
-                            ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)},
-                            symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false,
-                            enlarge x limits=0.25, ymin=0, legend cell align=left, 
-                            legend style={at={(1,1.05)}, anchor=south east, column sep=1ex}
-                        ]
-                \addplot[style={mmaroon,fill=mmaroon,mark=none}]
-                    coordinates {(antlr, 75) (hsqldb, 83) (batik, 66)};
-
-                \addplot[style={rred,fill=rred,mark=none}]
-                     coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
-
-                \addplot[style={oorange,fill=oorange,mark=none}]
-                     coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
-
-                \addplot[style={ggreen,fill=ggreen,mark=none}]
-                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-
-                \addplot[style={bblue,fill=bblue,mark=none}]
-                     coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
-
-                \addplot[style={ccyan,fill=ccyan,mark=none}]
-                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-
-                \legend{Doop-Nexgen, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
-            \end{axis}
-        \end{tikzpicture}
 
 
 \thesissection{Soot}
     Originally, Soot started off as a Java optimization framework. By now, researchers and 
     practitioners from around the world use Soot to analyze, instrument, optimize and 
     visualize Java and Android applications.
+
+    \thesissubsection{Bytecode To Jimple}
+        Soot is able to translate Java bytecode to a typed 3-address IR, Jimple.
+        Jimple (Java Simple) is a very convinient IR for performing optimizations, it 
+        only has 15 statements.
+
+        First step is a naive translation to untyped Jimple with new local variables.
+        Then Types are inferred to the untyped jimple. The local variables which start 
+        with a \$ sign represent stack positions.
+        
+        The code of the program to analyze is called Application Code.
+        Soot loads Basic Java classes and then specific Application classes.
+        Then, an interface is created between Java bytecode and Soot (ClassSource) 
+        and starts resolving class source and produce sootClasses.
+        These objects is used later to get the Jimple representation of a Class.
+        So, if during an analysis with soot the Jimple code was not already
+        generated, soot will call getActiveBody() to compute Jimple.
+
 
 
 \thesissection{Four Approaches}
@@ -304,6 +287,44 @@
 
     \thesissubsection{One Thread Per Classes}
         Similar as the second approach, but insted of having one thread per class, now we have one thread per multiple classes.
+
+
+
+\thesissection{Locking}
+    Threads and locks blah blah blah
+
+
+
+\thesissection{Time Results}
+        \definecolor{mmaroon}{HTML}{800000}
+        \definecolor{rred}{HTML}{C0504D}
+        \definecolor{oorange}{HTML}{FFA500}
+        \definecolor{ggreen}{HTML}{9BBB59}
+        \definecolor{bblue}{HTML}{4F81BD}
+        \definecolor{ccyan}{HTML}{00FFFF}
+
+        \begin{tikzpicture}
+            \begin{axis}[title=Fact Generation, width=\textwidth, height=12cm, major x tick style = transparent,
+                            ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)},
+                            symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false,
+                            enlarge x limits=0.25, ymin=0, legend cell align=left, 
+                            legend style={at={(1,1.05)}, anchor=south east, column sep=1ex}
+                        ]
+                \addplot[style={mmaroon,fill=mmaroon,mark=none}]
+                    coordinates {(antlr, 75) (hsqldb, 83) (batik, 66)};
+                \addplot[style={rred,fill=rred,mark=none}]
+                     coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
+                \addplot[style={oorange,fill=oorange,mark=none}]
+                     coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
+                \addplot[style={ggreen,fill=ggreen,mark=none}]
+                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
+                \addplot[style={bblue,fill=bblue,mark=none}]
+                     coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
+                \addplot[style={ccyan,fill=ccyan,mark=none}]
+                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
+                \legend{Doop-Nexgen, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
+            \end{axis}
+        \end{tikzpicture}
 
 
 \end{document}
