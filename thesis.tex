@@ -7,6 +7,7 @@
 \usepackage{pgfplots}
 \usepackage{tikz}
 \usepackage{booktabs}
+\usepackage{listings}
 
 \setallmainfonts[Mapping=tex-text]{Arial}
 \setallsansfonts[Mapping=tex-text]{Arial}
@@ -54,7 +55,7 @@
                                 {Keywords}{Static Program Analysis}
                                 {Doop: Fact Generation}
                                 {Soot}
-                                {Undergraduate Theses}
+                                {Undergraduate Thesis}
                                 {Dept. of Informatics}
                                 {University of Athens}
 \end{thesisabstract}
@@ -157,6 +158,108 @@
     visualize Java and Android applications.
 
 
+\thesissection{Four Approaches}
+    Abstract: Linear Fact Generation
+    \definecolor{dkgreen}{rgb}{0,0.6,0}
+    \definecolor{gray}{rgb}{0.5,0.5,0.5}
+    \definecolor{mauve}{rgb}{0.58,0,0.82}
+
+    \lstset{frame=tb, language=Java, aboveskip=3mm, belowskip=3mm,
+        showstringspaces=false, columns=flexible,
+        basicstyle={\small\ttfamily}, numbers=none,
+        numberstyle=\tiny\color{gray}, keywordstyle=\color{blue},
+        commentstyle=\color{dkgreen}, stringstyle=\color{mauve},
+        breaklines=true, breakatwhitespace=true, tabsize=3
+    }
+    \begin{lstlisting}[frame=single] 
+        public class FactGenerator {
+            /* ... */
+
+            public void generate(sootClass) {
+                if(c.hasSuperclass() && !c.isInterface())
+                    _writer.writeDirectSuperclass(c, c.getSuperclass());
+                for(SootField f : c.getFields())
+                    generate(f);
+                for(SootMethod m : c.getMethods()) {
+                    Session session = new Session();
+                    generate(m, session);
+                }
+            }
+
+            public void generate(SootMethod m, Session session) {
+                /* ... */
+                
+                /* This instruction spends more than 80% of FG time */
+                m.retrieveActiveBody() 
+                
+                /* ... */
+            }
+
+            /* ... */
+        }
+    \end{lstlisting}
+
+    \thesissubsection{One Thread Per Method}
+        \begin{lstlisting}[frame=single]
+            public class FactGenerator {
+                private ExecutorService MgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+                /* ... */
+
+                public void generate(sootClass) {
+                    if(c.hasSuperclass() && !c.isInterface())
+                        _writer.writeDirectSuperclass(c, c.getSuperclass());
+                    for(SootField f : c.getFields())
+                        generate(f);
+                    for(SootMethod m : c.getMethods()) {
+                        Session session = new Session();
+                        Runnable mg = new MethodGenerator();
+                        MgExecutor.execute(mg);
+                    }
+                }
+            }
+
+            public class MethodGenerator {
+                public void run() {
+                    generate(this.m, this.s)
+                }
+
+                /* ... */
+            }
+        \end{lstlisting}
+
+    \thesissubsection{One Thread Per Class}
+        \begin{lstlisting}[frame=single]
+            public class FactGenerator {
+                private ExecutorService CgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+                /* ... */
+
+                public void generate(sootClass) {
+                    Runnable cg = new ClassGenerator();
+                    CgExecutor.execute(cg);
+                }
+            }
+
+            public class ClassGenerator {
+                public void run() {
+                    if(c.hasSuperclass() && !c.isInterface())
+                        _writer.writeDirectSuperclass(c, c.getSuperclass());
+                    for(SootField f : c.getFields())
+                        generate(f);
+                    for(SootMethod m : c.getMethods()) {
+                        Session session = new Session();
+                        Runnable mg = new MethodGenerator();
+                        MgExecutor.execute(mg);
+                        generate(m, session);
+                    }
+                }
+
+                /* ... */
+            }
+        \end{lstlisting}
+
+    \thesissubsection{Fork-Join Framework}
+
+    \thesissubsection{One Thread Per Classes}
 
 
 
