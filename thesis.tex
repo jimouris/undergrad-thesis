@@ -154,38 +154,9 @@
         commentstyle=\color{dkgreen}, stringstyle=\color{mauve},
         breaklines=true, breakatwhitespace=true, tabsize=3
     }
-    \begin{lstlisting}[frame=single] 
-        public class FactGenerator {
-            /* ... */
-
-            public void generate(sootClass) {
-                if(c.hasSuperclass() && !c.isInterface())
-                    _writer.writeDirectSuperclass(c, c.getSuperclass());
-                for(SootField f : c.getFields())
-                    generate(f);
-                for(SootMethod m : c.getMethods()) {
-                    Session session = new Session();
-                    generate(m, session);
-                }
-            }
-
-            public void generate(SootMethod m, Session session) {
-                /* ... */
-                
-                /* This instruction spends more than 80% of FG time */
-                m.retrieveActiveBody() 
-                
-                /* ... */
-            }
-
-            /* ... */
-        }
-    \end{lstlisting}
-
-    \thesissubsection{One Thread Per Method}
-        \begin{lstlisting}[frame=single]
+    \begin{figure}[H]
+        \begin{lstlisting}[frame=single] 
             public class FactGenerator {
-                private ExecutorService MgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
                 /* ... */
 
                 public void generate(sootClass) {
@@ -195,95 +166,135 @@
                         generate(f);
                     for(SootMethod m : c.getMethods()) {
                         Session session = new Session();
-                        Runnable mg = new MethodGenerator();
-                        MgExecutor.execute(mg);
-                    }
-                }
-            }
-
-            public class MethodGenerator {
-                public void run() {
-                    generate(this.m, this.s)
-                }
-
-                /* ... */
-            }
-        \end{lstlisting}
-
-    \thesissubsection{One Thread Per Class}
-        \begin{lstlisting}[frame=single]
-            public class FactGenerator {
-                private ExecutorService CgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-                /* ... */
-
-                public void generate(sootClass) {
-                    Runnable cg = new ClassGenerator();
-                    CgExecutor.execute(cg);
-                }
-            }
-
-            public class ClassGenerator {
-                public void run() {
-                    if(c.hasSuperclass() && !c.isInterface())
-                        _writer.writeDirectSuperclass(c, c.getSuperclass());
-                    for(SootField f : c.getFields())
-                        generate(f);
-                    for(SootMethod m : c.getMethods()) {
-                        Session session = new Session();
-                        Runnable mg = new MethodGenerator();
-                        MgExecutor.execute(mg);
                         generate(m, session);
                     }
                 }
 
+                public void generate(SootMethod m, Session session) {
+                    /* ... */
+                    
+                    /* This instruction spends more than 80% of FG time */
+                    m.retrieveActiveBody() 
+                    
+                    /* ... */
+                }
+
                 /* ... */
             }
         \end{lstlisting}
+    \caption{Linear Fact Generation}
+    \end{figure}
 
-    \thesissubsection{Fork-Join Framework}
-        \begin{lstlisting}[frame=single]
-            public class FactGenerator {
-                private ForkJoinPool classGeneratorPool = new ForkJoinPool();
-                /* ... */
+    \thesissubsection{One Thread Per Method}
+        \begin{figure}[H]
+            \begin{lstlisting}[frame=single]
+                public class FactGenerator {
+                    private ExecutorService MgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+                    /* ... */
 
-                public void generate(sootClass) {
-                    if(c.hasSuperclass() && !c.isInterface())
-                        _writer.writeDirectSuperclass(c, c.getSuperclass());
-                    for(SootClass i : c.getInterfaces())
-                        _writer.writeDirectSuperinterface(c, i);
-                    for(SootField f : c.getFields())
-                        generate(f);
-                    if (c.getMethods().size() > 0) {
-                        ClassGenerator classGenerator = new ClassGenerator(_writer, _ssa, c, 0, c.getMethods().size());
-                        classGeneratorPool.invoke(classGenerator);
+                    public void generate(sootClass) {
+                        if(c.hasSuperclass() && !c.isInterface())
+                            _writer.writeDirectSuperclass(c, c.getSuperclass());
+                        for(SootField f : c.getFields())
+                            generate(f);
+                        for(SootMethod m : c.getMethods()) {
+                            Session session = new Session();
+                            Runnable mg = new MethodGenerator();
+                            MgExecutor.execute(mg);
+                        }
                     }
                 }
-            }
 
-            public class ClassGenerator {
-                /* ... */
+                public class MethodGenerator {
+                    public void run() {
+                        generate(this.m, this.s)
+                    }
 
-                public void compute() {
-                    List<SootMethod> sootMethods = _sootClass.getMethods();
-                    /* if (my portion of the work is small enough) */
-                    if (_to - _from < threshold) {
-                        for (int i = _from ; i < _to ; i++) {
-                            SootMethod m = sootMethods.get(i);
+                    /* ... */
+                }
+            \end{lstlisting}
+        \caption{One Thread Per Method}
+        \end{figure}
+
+    \thesissubsection{One Thread Per Class}
+        \begin{figure}[H]
+            \begin{lstlisting}[frame=single]
+                public class FactGenerator {
+                    private ExecutorService CgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+                    /* ... */
+
+                    public void generate(sootClass) {
+                        Runnable cg = new ClassGenerator();
+                        CgExecutor.execute(cg);
+                    }
+                }
+
+                public class ClassGenerator {
+                    public void run() {
+                        if(c.hasSuperclass() && !c.isInterface())
+                            _writer.writeDirectSuperclass(c, c.getSuperclass());
+                        for(SootField f : c.getFields())
+                            generate(f);
+                        for(SootMethod m : c.getMethods()) {
                             Session session = new Session();
+                            Runnable mg = new MethodGenerator();
+                            MgExecutor.execute(mg);
                             generate(m, session);
                         }
-                    } else { /* split work*/
-                        int half = (_to - _from)/2;
-                        ClassGenerator c1 = new ClassGenerator(_writer, _ssa, _sootClass, _from, _from + half);
-                        ClassGenerator c2 = new ClassGenerator(_writer, _ssa, _sootClass, _from + half, _to);
-                        invokeAll(c1, c2);
+                    }
+
+                    /* ... */
+                }
+            \end{lstlisting}
+        \caption{One Thread Per Class}
+        \end{figure}
+
+    \thesissubsection{Fork-Join Framework}
+        \begin{figure}[H]
+            \begin{lstlisting}[frame=single]
+                public class FactGenerator {
+                    private ForkJoinPool classGeneratorPool = new ForkJoinPool();
+                    /* ... */
+
+                    public void generate(sootClass) {
+                        if(c.hasSuperclass() && !c.isInterface())
+                            _writer.writeDirectSuperclass(c, c.getSuperclass());
+                        for(SootClass i : c.getInterfaces())
+                            _writer.writeDirectSuperinterface(c, i);
+                        for(SootField f : c.getFields())
+                            generate(f);
+                        if (c.getMethods().size() > 0) {
+                            ClassGenerator classGenerator = new ClassGenerator(_writer, _ssa, c, 0, c.getMethods().size());
+                            classGeneratorPool.invoke(classGenerator);
+                        }
                     }
                 }
 
-                /* ... */
-            }
-        \end{lstlisting}
+                public class ClassGenerator {
+                    /* ... */
 
+                    public void compute() {
+                        List<SootMethod> sootMethods = _sootClass.getMethods();
+                        /* if (my portion of the work is small enough) */
+                        if (_to - _from < threshold) {
+                            for (int i = _from ; i < _to ; i++) {
+                                SootMethod m = sootMethods.get(i);
+                                Session session = new Session();
+                                generate(m, session);
+                            }
+                        } else { /* split work*/
+                            int half = (_to - _from)/2;
+                            ClassGenerator c1 = new ClassGenerator(_writer, _ssa, _sootClass, _from, _from + half);
+                            ClassGenerator c2 = new ClassGenerator(_writer, _ssa, _sootClass, _from + half, _to);
+                            invokeAll(c1, c2);
+                        }
+                    }
+
+                    /* ... */
+                }
+            \end{lstlisting}
+        \caption{Fork-Join Framework}
+        \end{figure}
 
     \thesissubsection{One Thread Per Classes}
         Similar as the second approach, but insted of having one thread per class, now we have one thread per multiple classes.
