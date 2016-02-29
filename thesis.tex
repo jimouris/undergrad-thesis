@@ -120,21 +120,11 @@
     visualize Java and Android applications.
 
     \thesissubsection{Bytecode To Jimple}
-        Soot is able to translate Java bytecode to a typed 3-address IR, Jimple.
-        Jimple (Java Simple) is a very convinient IR for performing optimizations, it 
-        only has 15 statements.
+        Soot is able to translate Java bytecode to a typed 3-address IR, Jimple. Jimple (Java Simple) is a very convinient IR for performing optimizations, it only has 15 statements.
 
-        First step is a naive translation to untyped Jimple with new local variables.
-        Then Types are inferred to the untyped jimple. The local variables which start 
-        with a \$ sign represent stack positions.
+        First step is a naive translation to untyped Jimple with new local variables. Then Types are inferred to the untyped jimple. An important step is the linearization of expressions to statements only reference at most 3 local variables or constants. The local variables which start with a \$ sign represent stack positions and not local variables in the original program whereas those without \$ represent real local variables.
         
-        The code of the program to analyze is called Application Code.
-        Soot loads Basic Java classes and then specific Application classes.
-        Then, an interface is created between Java bytecode and Soot (ClassSource) 
-        and starts resolving class source and produce sootClasses.
-        These objects is used later to get the Jimple representation of a Class.
-        So, if during an analysis with soot the Jimple code was not already
-        generated, soot will call getActiveBody() to compute Jimple.
+        We now describe how Soot handles Java bytecode classes. In a typical case, Soot is launched by specifying the target directory as a parameter. This directory contains the code of the program to analyze, called Application Code (only Java bytecode in this example). First, the \textit{main()} method of the Main class is executed and calls \textit{Scene.loadNecessaryClasses()}. This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. When the resolver has a reference to a class source, it calls \textit{resolve()} on it. This methods in turn calls \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class’ methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For instance, if during an analysis with Soot the analysis code calls \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
 
 
 
