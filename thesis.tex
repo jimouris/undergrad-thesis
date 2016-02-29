@@ -23,12 +23,12 @@
 
 \renewcommand{\thesislabel}{Πτυχιακή Εργασία}
 \renewcommand{\supervisorlabel}{Επιβλέπων}
-\renewcommand{\idlabel}{1115201200114}
+\renewcommand{\idlabel}{Α.Μ.}
 
 \begin{document}
 \thesistitle{Doop-Soot: Parallel Fact Generation}
 \thesisauthor{Μούρης Δημήτριος}{1115201200114}
-\supervisor{Σμαραγδάκης Γιάννης}{Καθηγητής ΕΚΠΑ}
+\supervisor{Σμαραγδάκης Γιάννης}{Αναπληρωτής Καθηγητής ΕΚΠΑ}
 \maketitle
 
 \begin{thesisabstract}[Περίληψη]
@@ -66,8 +66,6 @@
 \end{thesisdedication}
 
 \begin{thesisacknowledgments}[Ευχαριστίες]
-    Ακολουθεί δείγμα ευχαριστιών.
-
     Θα ήθελα να ευχαριστήσω τον επιβλέποντα κ. Αλέξη Δελή για τη συνεργασία και τη
     βοήθεια κατά την εκπόνηση αυτής της πτυχιακής.
 
@@ -99,8 +97,7 @@
     
     \thesissubsection{Fact Generation}
         Doop before running a pointer or points-to analysis, intergrates with Soot to generate
-        the facts. Facts are in Jimple (\textbf{J}ava s\textbf{imple}), a typed 3-address IR suitable for performing
-        optimizations, it only has 15 statements.
+        the facts. Facts are in Jimple (\textbf{J}ava s\textbf{imple}), a typed 3-address IR suitable for performing optimizations, it only has 15 statements.
 
     \thesissubsection{Doop-Nexgen Time Examples}
         \begin{table}[H]
@@ -143,17 +140,13 @@
 
 \thesissection{Four Approaches}
     Abstract: Linear Fact Generation
-    \definecolor{dkgreen}{rgb}{0,0.6,0}
     \definecolor{gray}{rgb}{0.5,0.5,0.5}
-    \definecolor{mauve}{rgb}{0.58,0,0.82}
-
     \lstset{frame=tb, language=Java, aboveskip=3mm, belowskip=3mm,
         showstringspaces=false, columns=flexible,
-        basicstyle={\small\ttfamily}, numbers=none,
-        numberstyle=\tiny\color{gray}, keywordstyle=\color{blue},
-        commentstyle=\color{dkgreen}, stringstyle=\color{mauve},
-        breaklines=true, breakatwhitespace=true, tabsize=3
+        basicstyle={\small\ttfamily}, numbers=left, framexleftmargin=20pt,
+        numberstyle=\tiny\color{gray}, breaklines=true, breakatwhitespace=true, tabsize=3
     }
+    
     \begin{figure}[H]
         \begin{lstlisting}[frame=single] 
             public class FactGenerator {
@@ -186,6 +179,7 @@
     \end{figure}
 
     \thesissubsection{One Thread Per Method}
+        Our first approach to parallelize Fact Generation. Similar as the linear one, but instead of having a loop over all Soot Methods, we create a runnable for each one of them. 
         \begin{figure}[H]
             \begin{lstlisting}[frame=single]
                 public class FactGenerator {
@@ -217,6 +211,7 @@
         \end{figure}
 
     \thesissubsection{One Thread Per Class}
+        We observed that some threads did not have much work to do, and finishing instantly. All those new allocations and assignments were an overhead. So, in this approach we tried to feed the threads more and we create a new thread for each class, not for each method.  
         \begin{figure}[H]
             \begin{lstlisting}[frame=single]
                 public class FactGenerator {
@@ -250,12 +245,28 @@
         \end{figure}
 
     \thesissubsection{Fork-Join Framework}
+        The fork/join framework is an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.
+
+        The center of the fork/join framework is the ForkJoinPool class, an extension of the AbstractExecutorService class. ForkJoinPool implements the core work-stealing algorithm and can execute ForkJoinTask processes.
+
+        The idea of using the fork/join framework is to write code that performs a segment of the work. The basic structure should be like the following pseudocode.
+        \begin{figure}[H]
+            \begin{lstlisting}[frame=single]
+                if (my portion of the work is small enough) {
+                    do the work directly
+                } else {
+                    split my work into two pieces
+                    invoke the two pieces and wait for the results
+                }
+            \end{lstlisting}
+        \caption{Fork-Join Basic-Use}
+        \end{figure}
+
         \begin{figure}[H]
             \begin{lstlisting}[frame=single]
                 public class FactGenerator {
                     private ForkJoinPool classGeneratorPool = new ForkJoinPool();
                     /* ... */
-
                     public void generate(sootClass) {
                         if(c.hasSuperclass() && !c.isInterface())
                             _writer.writeDirectSuperclass(c, c.getSuperclass());
@@ -272,7 +283,6 @@
 
                 public class ClassGenerator {
                     /* ... */
-
                     public void compute() {
                         List<SootMethod> sootMethods = _sootClass.getMethods();
                         /* if (my portion of the work is small enough) */
@@ -289,16 +299,58 @@
                             invokeAll(c1, c2);
                         }
                     }
-
                     /* ... */
                 }
             \end{lstlisting}
         \caption{Fork-Join Framework}
         \end{figure}
 
-    \thesissubsection{One Thread Per Classes}
-        Similar as the second approach, but insted of having one thread per class, now we have one thread per multiple classes.
+    \thesissubsection{Multiple Classes Per Thread}
+        Similar as the second approach, but insted of having one thread per class, now we have one thread per multiple classes. Some threads in the previous approaches did not have much work to do. 
 
+        \begin{figure}[H]
+            \begin{lstlisting}[frame=single]
+                public class Driver {
+                    public Driver(ThreadFactory factory, boolean ssa, int totalClasses) {
+                        _factory = factory;
+                        _ssa = ssa;
+                        _classCounter = 0;
+                        _sootClasses = new ArrayList<>();
+                        _totalClasses = totalClasses;
+                        _cores = Runtime.getRuntime().availableProcessors();
+                        _executor = new ThreadPoolExecutor(_cores/2, _cores, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+                    }
+
+                    public void doInParallel(List<SootClass> sootClasses) {
+                        for(SootClass c : sootClasses)
+                            generate(c);
+                        _executor.shutdown();
+                        _executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                    }
+
+                    void generate(SootClass _sootClass) {
+                        _classCounter++;
+                        _sootClasses.add(_sootClass);
+                        if ((_classCounter % _classSplit == 0) || (_classCounter + _classSplit-1 >= _totalClasses)) {
+                            Runnable runnable = _factory.newRunnable(_sootClasses);
+                            _executor.execute(runnable);
+                            _sootClasses = new ArrayList<>();
+                        }
+                    }
+                }
+
+                public class ThreadFactory {
+                    /* ... */
+                    public Runnable newRunnable(List<SootClass> sootClasses) {
+                        if (_makeClassGenerator)
+                            return new FactGenerator(_factWriter, _ssa, sootClasses);
+                        else
+                            return new FactPrinter(_ssa, _toStdout, _outputDir, _printWriter, sootClasses);
+                    }
+                }
+            \end{lstlisting}
+        \caption{Multiple Classes Per Thread}
+        \end{figure}
 
 
 \thesissection{Locking}
