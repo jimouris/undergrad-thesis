@@ -27,8 +27,8 @@
 
 \begin{document}
 \thesistitle{Doop-Soot: Parallel Fact Generation}
-\thesisauthor{Μούρης Δημήτριος}{1115201200114}
-\supervisor{Σμαραγδάκης Γιάννης}{Αναπληρωτής Καθηγητής ΕΚΠΑ}
+\thesisauthor{Mouris Dimitris}{1115201200114}
+\supervisor{Smaragdakis Yannis}{Associate Professor NKUA}
 \maketitle
 
 \begin{thesisabstract}[ΠΕΡΙΛΗΨΗ]
@@ -94,7 +94,8 @@
     Doop is a framework for pointer, or points-to, analysis of Java programs. 
     Doop implements a range of algorithms, including context insensitive, call-site sensitive, 
     and object-sensitive analyses, all specified modularly as variations on a common code base.
-    
+    \cite{Doop: Framework for Java Pointer Analysis}
+
     \thesissubsection{Fact Generation}
         Doop before running a pointer or points-to analysis, intergrates with Soot to generate
         the facts. Facts are in Jimple (\textbf{J}ava s\textbf{imple}), a typed 3-address IR suitable for performing optimizations, it only has 15 statements.
@@ -118,13 +119,16 @@
     Originally, Soot started off as a Java optimization framework. By now, researchers and 
     practitioners from around the world use Soot to analyze, instrument, optimize and 
     visualize Java and Android applications.
-
+    \cite{Sable: Soot}
+    
     \thesissubsection{Bytecode To Jimple}
         Soot is able to translate Java bytecode to a typed 3-address IR, Jimple. Jimple (Java Simple) is a very convinient IR for performing optimizations, it only has 15 statements.
 
         First step is a naive translation to untyped Jimple with new local variables. Then Types are inferred to the untyped jimple. An important step is the linearization of expressions to statements only reference at most 3 local variables or constants. The local variables which start with a \$ sign represent stack positions and not local variables in the original program whereas those without \$ represent real local variables.
         
-        We now describe how Soot handles Java bytecode classes. In a typical case, Soot is launched by specifying the target directory as a parameter. This directory contains the code of the program to analyze, called Application Code (only Java bytecode in this example). First, the \textit{main()} method of the Main class is executed and calls \textit{Scene.loadNecessaryClasses()}. This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. When the resolver has a reference to a class source, it calls \textit{resolve()} on it. This methods in turn calls \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class’ methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For instance, if during an analysis with Soot the analysis code calls \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
+        We now describe how Soot handles Java bytecode classes. In a typical case, Soot is launched by specifying the target directory as a parameter. This directory contains the code of the program to analyze, called Application Code (only Java bytecode in this example). First, the \textit{main()} method of the Main class is executed and calls \\
+        \textit{Scene.loadNecessaryClasses()}. This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \\ 
+        \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. When the resolver has a reference to a class source, it calls \textit{resolve()} on it. This methods in turn calls \\ \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class’ methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For instance, if during an analysis with Soot the analysis code calls \\ \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \\ \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
 
 
 
@@ -138,7 +142,7 @@
     }
 
     \begin{figure}[H]
-        \begin{lstlisting}[frame=single] 
+        \begin{lstlisting}
             public class FactGenerator {
                 /* ... */
 
@@ -171,7 +175,7 @@
     \thesissubsection{One Thread Per Method}
         Our first approach to parallelize Fact Generation. Similar as the linear one, but instead of having a loop over all Soot Methods, we create a runnable for each one of them. 
         \begin{figure}[H]
-            \begin{lstlisting}[frame=single]
+            \begin{lstlisting}
                 public class FactGenerator {
                     private ExecutorService MgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
                     /* ... */
@@ -203,7 +207,7 @@
     \thesissubsection{One Thread Per Class}
         We observed that some threads did not have much work to do, and finishing instantly. All those new allocations and assignments were an overhead. So, in this approach we tried to feed the threads more and we create a new thread for each class, not for each method.  
         \begin{figure}[H]
-            \begin{lstlisting}[frame=single]
+            \begin{lstlisting}
                 public class FactGenerator {
                     private ExecutorService CgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
                     /* ... */
@@ -239,9 +243,9 @@
 
         The center of the fork/join framework is the ForkJoinPool class, an extension of the AbstractExecutorService class. ForkJoinPool implements the core work-stealing algorithm and can execute ForkJoinTask processes.
 
-        The idea of using the fork/join framework is to write code that performs a segment of the work. The basic structure should be like the following pseudocode.
+        The idea of using the fork/join framework is to write code that performs a segment of the work. The basic structure should be like the following pseudocode. \cite{Oracle Java Fork/Join Framework}
         \begin{figure}[H]
-            \begin{lstlisting}[frame=single]
+            \begin{lstlisting}
                 if (my portion of the work is small enough) {
                     do the work directly
                 } else {
@@ -253,7 +257,7 @@
         \end{figure}
 
         \begin{figure}[H]
-            \begin{lstlisting}[frame=single]
+            \begin{lstlisting}
                 public class FactGenerator {
                     private ForkJoinPool classGeneratorPool = new ForkJoinPool();
                     /* ... */
@@ -299,7 +303,7 @@
         Similar as the second approach, but insted of having one thread per class, now we have one thread per multiple classes. Some threads in the previous approaches did not have much work to do. 
 
         \begin{figure}[H]
-            \begin{lstlisting}[frame=single]
+            \begin{lstlisting}
                 public class Driver {
                     public Driver(ThreadFactory factory, boolean ssa, int totalClasses) {
                         _factory = factory;
@@ -346,42 +350,133 @@
 \thesissection{Locking}
     Threads and locks blah blah blah
 
+    \thesissubsection{Type Assigner}
+		Lock before applying Type Assigner, unlock afterwards.
+    	\begin{figure}[H]
+            \begin{lstlisting}
+		    	lock.lock();
+				PackManager.v().getTransform("jb.tr").apply(b);
+				lock.unlock();
+			\end{lstlisting}
+        \caption{JimpleBodyPack.java}
+        \end{figure}
+
+    \thesissubsection{Fact Writer}
+    	\thesissubsubsection{CSVDatabase}
+	    	Lock files, to prevent more than one threads to write to the same file. 
+	    	\begin{figure}[H]
+	            \begin{lstlisting}
+			    	synchronized(predicateFile) {
+		                Writer writer = getWriter(predicateFile);
+		                addColumn(writer, arg, shouldTruncate);
+		                for (Column col : args)
+		                    addColumn(writer.append(SEP), col, shouldTruncate);
+		                writer.write(EOL);
+	            	}
+				\end{lstlisting}
+	        \caption{CSVDatabase.java}
+	        \end{figure}
+	    \thesissubsubsection{Represantation}
+	    	Lock files, to prevent more than one threads to write to the same file. 
+	    	\begin{figure}[H]
+	            \begin{lstlisting}
+			    	public synchronized String signature(SootMethod);
+			    	public synchronized String handler(SootMethod, Trap, Session);
+			    	public synchronized String compactMethod(SootMethod);
+				\end{lstlisting}
+	        \caption{Represantation.java}
+	        \end{figure}
+
+    \thesissubsection{Pack Manager}
+    	Lock before retrieving Class Hierarchy Analysis, unlock afterwards.
+		\begin{figure}[H]
+            \begin{lstlisting}
+				lock.lock();
+				p.add(new Transform("cg.cha", CHATransformer.v()));
+				p.add(new Transform("cg.spark", SparkTransformer.v()));
+				p.add(new Transform("cg.paddle", PaddleHook.v()));
+				lock.unlock();
+			\end{lstlisting}
+        \caption{PackManager.java}
+        \end{figure}
+
+    \thesissubsection{Shimple -ssa}
+    	Synchronize all Shimple-Body-creation methods.
 
 
 \thesissection{Time Results}
-        \begin{figure}[H]
-            \centering
-            \definecolor{mmaroon}{HTML}{800000}
-            \definecolor{rred}{HTML}{C0504D}
-            \definecolor{oorange}{HTML}{FFA500}
-            \definecolor{ggreen}{HTML}{9BBB59}
-            \definecolor{bblue}{HTML}{4F81BD}
-            \definecolor{ccyan}{HTML}{00FFFF}
-            \begin{tikzpicture}
-                \begin{axis}[   width=\textwidth, height=12cm, major x tick style = transparent,
-                                ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)},
-                                symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false,
-                                enlarge x limits=0.25, ymin=0, legend cell align=left, 
-                                legend style={at={(1,1.05)}, anchor=south east, column sep=1ex}
-                            ]
-                    \addplot[style={mmaroon,fill=mmaroon,mark=none}]
-                        coordinates {(antlr, 75) (hsqldb, 83) (batik, 66)};
-                    \addplot[style={rred,fill=rred,mark=none}]
-                         coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
-                    \addplot[style={oorange,fill=oorange,mark=none}]
-                         coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
-                    \addplot[style={ggreen,fill=ggreen,mark=none}]
-                         coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-                    \addplot[style={bblue,fill=bblue,mark=none}]
-                         coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
-                    \addplot[style={ccyan,fill=ccyan,mark=none}]
-                         coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-                    \legend{Doop-Nexgen, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
-                \end{axis}
-            \end{tikzpicture}
-            \caption{Fact Generation Time Results}
-        \end{figure}
+    \begin{figure}[H]
+        \centering
+        \definecolor{mmaroon}{HTML}{800000}
+        \definecolor{rred}{HTML}{C0504D}
+        \definecolor{oorange}{HTML}{FFA500}
+        \definecolor{ggreen}{HTML}{9BBB59}
+        \definecolor{bblue}{HTML}{4F81BD}
+        \definecolor{ccyan}{HTML}{00FFFF}
+        \begin{tikzpicture}
+            \begin{axis}[   width=\textwidth, height=12cm, major x tick style = transparent,
+                            ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)},
+                            symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false,
+                            enlarge x limits=0.25, ymin=0, legend cell align=left, 
+                            legend style={at={(1,1.05)}, anchor=south east, column sep=1ex}
+                        ]
+                \addplot[style={mmaroon,fill=mmaroon,mark=none}]
+                    coordinates {(antlr, 75) (hsqldb, 83) (batik, 66)};
+                \addplot[style={rred,fill=rred,mark=none}]
+                     coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
+                \addplot[style={oorange,fill=oorange,mark=none}]
+                     coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
+                \addplot[style={ggreen,fill=ggreen,mark=none}]
+                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
+                \addplot[style={bblue,fill=bblue,mark=none}]
+                     coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
+                \addplot[style={ccyan,fill=ccyan,mark=none}]
+                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
+                \legend{Doop-Nexgen, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Fact Generation Time Results}
+    \end{figure}
 
+\begin{thesisterminology}[Πίνακας Ορολογίας]
+	Ακολουθεί δείγμα πίνακα ορολογίας.
+
+	\begin{tabularx}{\textwidth}{|X|X|}
+		\hline
+		κλάσση     & class \\
+		\hline
+		εντολή     & command \\
+		\hline
+		περιβάλλον & environment \\
+		\hline
+	\end{tabularx}
+
+\end{thesisterminology}
+
+
+\begin{thesisabbreviations}[ABBREVIATIONS]
+	\begin{tabularx}{\textwidth}{|X|X|}
+		\hline
+		NP & Non-deterministic polynomial time \\
+		\hline
+	\end{tabularx}
+\end{thesisabbreviations}
+
+
+\begin{thesisbibliography}[REFERENCES]{99}
+	\bibitem{Doop: Framework for Java Pointer Analysis}
+		"Doop: Framework for Java Pointer Analysis"
+		[Online]
+		Available: \url{http://doop.program-analysis.org/}
+	\bibitem{Sable: Soot}
+		"Sable: Soot"
+		[Online]
+		Available: \url{https://sable.github.io/soot/}
+	\bibitem{Oracle Java Fork/Join Framework}
+		"Oracle Java Fork/Join Framework"
+		[Online]
+		Available: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html}
+\end{thesisbibliography}
 
 
 \end{document}
