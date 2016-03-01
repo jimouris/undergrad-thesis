@@ -44,13 +44,7 @@
 \end{thesisabstract}
 
 \begin{thesisabstract}[ABSTRACT]
-    In this paper, we provide documentation for the \LaTeX{} document class
-    dithesis, which can be used for preparing undergraduate theses at the 
-    Department of Informatics and Telecommunications, University of Athens.
-    The class conforms to all requirements imposed by the Library, as of September
-    2011.
-    My thesis, which was based on the dithesis class, was accepted by the Library
-    sometime during the summer semester of 2011.
+    Παραλληλοποίηση του Fact Generation του Doop. Το Doop χρησιμοποιείται για μπλαμαπλπαλαμπλ
 
     \thesiskeywords{Subject Area}{Documentation}
                 {Keywords}{Static Program Analysis}
@@ -66,11 +60,11 @@
 \end{thesisdedication}
 
 \begin{thesisacknowledgments}[ACKNOWLEDGEMENTS]
-    Θα ήθελα να ευχαριστήσω τον επιβλέποντα κ. Αλέξη Δελή για τη συνεργασία και τη
-    βοήθεια κατά την εκπόνηση αυτής της πτυχιακής.
+    blahblahblahblah
+    
+    blahblahblahblah
 
-    Θα ήθελα επίσης να ευχαριστήσω το φίλο μου Μένιο για τις πολύτιμες
-    παρατηρήσεις του σε προκαταρκτικές εκδόσεις του κειμένου.
+    blahblahblahblah
 \end{thesisacknowledgments}
 
 \tableofcontents
@@ -79,19 +73,17 @@
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \lstset{frame=tb, language=Java, aboveskip=3mm, belowskip=3mm,
     showstringspaces=false, columns=flexible,
-    basicstyle={\small\ttfamily}, numbers=left, framexleftmargin=20pt,
+    basicstyle={\small\ttfamily}, numbers=left, framexleftmargin=20pt, commentstyle=\color{gray},
     numberstyle=\tiny\color{gray}, breaklines=true, breakatwhitespace=true, tabsize=3
 }
 
 
 \begin{thesisprologue}[PROLOGUE]
-    Το παρόν έγγραφο δημιουργήθηκε στην Αθήνα, το 2016, στα πλαίσια της 
-    τεκμηρίωσης της κλάσσης \LaTeX{} dithesis.
-    Η κλάσση αυτή διανέμεται με την ελπίδα ότι θα αποδειχθεί χρήσιμη, παρόλα αυτά 
-    \emph{χωρίς καμιά εγγύηση}: χωρίς ούτε και την σιωπηρή εγγύηση 
-    εμπορευσιμότητας ή καταλληλότητας για συγκεκριμένη χρήση.
-    Για περισσότερες λεπτομέρειες, ανατρέξτε στην άδεια LaTeX Project Public 
-    License.
+    Το παρόν έγγραφο δημιουργήθηκε στην Αθήνα, το 2016 
+    
+    blahblahblahblah
+
+    blahblahblahblah
 \end{thesisprologue}
 
 \thesissection{Introduction}
@@ -259,6 +251,33 @@
                 \end{lstlisting}
             \caption{inheritanceTest.jimple}
             \end{figure}
+
+    \thesissubsection{Compiling \& Running Soot}
+        \begin{figure}[H]
+            \begin{lstlisting}
+                ant             /* To compile */
+                ant classesjar  /* To generate the sootclasses jar file */
+                ant fulljar     /* To generate the complete soot jar file */
+            \end{lstlisting}
+        \caption{Compiling Soot}
+        \end{figure}
+
+        \begin{figure}[H]
+            \begin{lstlisting}
+                (create a test.java)
+                javac test.java
+                java -cp ./lib/soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar test
+            \end{lstlisting}
+        \caption{Generating Jimple from .class}
+        \end{figure}
+
+        \begin{figure}[H]
+            \begin{lstlisting}
+                java -cp soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar -process-dir pathtotest.jar
+            \end{lstlisting}
+        \caption{Generating Jimple from .jar}
+        \end{figure}
+
 
 
 \thesissection{Four Approaches}
