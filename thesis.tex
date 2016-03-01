@@ -76,6 +76,13 @@
 \tableofcontents
 \listoffigures
 \listoftables
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\lstset{frame=tb, language=Java, aboveskip=3mm, belowskip=3mm,
+    showstringspaces=false, columns=flexible,
+    basicstyle={\small\ttfamily}, numbers=left, framexleftmargin=20pt,
+    numberstyle=\tiny\color{gray}, breaklines=true, breakatwhitespace=true, tabsize=3
+}
+
 
 \begin{thesisprologue}[PROLOGUE]
     Το παρόν έγγραφο δημιουργήθηκε στην Αθήνα, το 2016, στα πλαίσια της 
@@ -130,16 +137,132 @@
         \textit{Scene.loadNecessaryClasses()}. This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \\ 
         \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. When the resolver has a reference to a class source, it calls \textit{resolve()} on it. This methods in turn calls \\ \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class’ methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For instance, if during an analysis with Soot the analysis code calls \\ \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \\ \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
 
+    \thesissubsection{Jimple Examples}
+        Below are two simple java programs along with their jimple translation. The first one is the classic HelloWorld, and the second is a simple inheritance test that depends on the user's input.
+        \thesissubsubsection{Hello World}
+            \begin{figure}[H]
+                \begin{lstlisting}
+                    public class helloWorld {
+                       public static void main(String[] args) {
+                           System.out.println("Hello, World");
+                       }
+                    }
+                \end{lstlisting}
+            \caption{HelloWorld.java}
+            \end{figure}
+            \begin{figure}[H]
+                \begin{lstlisting}
+                    public class helloWorld extends java.lang.Object {
+
+                        public void <init>() {
+                            helloWorld r0;
+                            r0 := @this: helloWorld;
+                            specialinvoke r0.<java.lang.Object: void <init>()>();
+                            return;
+                        }
+
+                        public static void main(java.lang.String[]) {
+                            java.lang.String[] r0;
+                            java.io.PrintStream $r1;
+                            r0 := @parameter0: java.lang.String[];
+                            $r1 = <java.lang.System: java.io.PrintStream out>;
+                            virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Hello, World");
+                            return;
+                        }
+
+                    }
+                \end{lstlisting}
+            \caption{HelloWorld.jimple}
+            \end{figure}
+
+        \thesissubsubsection{Inheritance Test}
+            \begin{figure}[H]
+                \begin{lstlisting}
+                    public class inheritanceTest {
+
+                        public static void main(String[] args) {
+                            testA a;
+                            if (args.length < 1) {
+                                a = new testA(5);
+                            } else {
+                                a = new testB(5);
+                            }
+                            int result = a.getA();
+                            System.out.println("the value of a is " + result);
+                        }
+
+                        public static class testA {
+                            int a;
+
+                            public testA(int a) {
+                                this.a = a;
+                            }
+
+                            public int getA() {
+                                return this.a;
+                            }
+                        }
+
+                        public static class testB extends testA {
+                            public testB(int a) {
+                                super(a+100);
+                            }
+                        }
+
+                    }
+                \end{lstlisting}
+            \caption{inheritanceTest.java}
+            \end{figure}
+            \begin{figure}[H]
+                \begin{lstlisting}
+                    public class inheritanceTest extends java.lang.Object {
+
+                        public void <init>() {
+                            inheritanceTest r0;
+                            r0 := @this: inheritanceTest;
+                            specialinvoke r0.<java.lang.Object: void <init>()>();
+                            return;
+                        }
+
+                        public static void main(java.lang.String[]) {
+                            java.lang.String[] r0;
+                            int $i0, i1;
+                            inheritanceTest$testA $r1, r2;
+                            inheritanceTest$testB $r3;
+                            java.io.PrintStream $r4;
+                            java.lang.StringBuilder $r5, $r6, $r7;
+                            java.lang.String $r8;
+                            r0 := @parameter0: java.lang.String[];
+                            $i0 = lengthof r0;
+                            if $i0 >= 1 goto label1;
+                            $r1 = new inheritanceTest$testA;
+                            specialinvoke $r1.<inheritanceTest$testA: void <init>(int)>(5);
+                            r2 = $r1;
+                            goto label2;
+                         label1:
+                            $r3 = new inheritanceTest$testB;
+                            specialinvoke $r3.<inheritanceTest$testB: void <init>(int)>(5);
+                            r2 = $r3;
+                         label2:
+                            i1 = virtualinvoke r2.<inheritanceTest$testA: int getA()>();
+                            $r4 = <java.lang.System: java.io.PrintStream out>;
+                            $r5 = new java.lang.StringBuilder;
+                            specialinvoke $r5.<java.lang.StringBuilder: void <init>()>();
+                            $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("the value of a is ");
+                            $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+                            $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.String toString()>();
+                            virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r8);
+                            return;
+                        }
+
+                    }
+                \end{lstlisting}
+            \caption{inheritanceTest.jimple}
+            \end{figure}
 
 
 \thesissection{Four Approaches}
     Abstract: Linear Fact Generation
-    \definecolor{gray}{rgb}{0.5,0.5,0.5}
-    \lstset{frame=tb, language=Java, aboveskip=3mm, belowskip=3mm,
-        showstringspaces=false, columns=flexible,
-        basicstyle={\small\ttfamily}, numbers=left, framexleftmargin=20pt,
-        numberstyle=\tiny\color{gray}, breaklines=true, breakatwhitespace=true, tabsize=3
-    }
 
     \begin{figure}[H]
         \begin{lstlisting}
