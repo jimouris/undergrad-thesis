@@ -90,16 +90,13 @@
     eisagwgh gia doop kai soot
 
 \thesissection{Doop}
-    Doop is a framework for pointer, or points-to, analysis of Java programs. 
-    Doop implements a range of algorithms, including context insensitive, call-site sensitive, 
-    and object-sensitive analyses, all specified modularly as variations on a common code base.
+    Doop is a framework for pointer, or points-to, analysis of Java programs. Doop implements a range of algorithms, including context insensitive, call-site sensitive, and object-sensitive analyses, all specified modularly as variations on a common code base. 
     \cite{Doop: Framework for Java Pointer Analysis}
 
     \thesissubsection{Fact Generation}
-        Doop before running a pointer or points-to analysis, intergrates with Soot to generate
-        the facts. Facts are in Jimple (\textbf{J}ava s\textbf{imple}), a typed 3-address IR suitable for performing optimizations, it only has 15 statements.
+        Doop before running a pointer or points-to analysis, intergrates with Soot to generate the facts. Facts are in Jimple (\textbf{J}ava s\textbf{imple}), a typed 3-address IR suitable for performing optimizations, it only has 15 statements. The main problem is that fact generation takes more than 50\% of total execution time. Below are presented a few time examples of the sequential Doop Fact Generation and total execution time (both fact generation and analysis times). 
 
-    \thesissubsection{Doop-Nexgen Time Examples}
+    \thesissubsection{Doop Time Examples}
         \begin{table}[H]
             \centering
             \label{my-label}
@@ -115,22 +112,44 @@
 
 
 \thesissection{Soot}
-    Originally, Soot started off as a Java optimization framework. By now, researchers and 
-    practitioners from around the world use Soot to analyze, instrument, optimize and 
-    visualize Java and Android applications.
+    Originally, Soot started off as a Java optimization framework. By now, researchers and practitioners from around the world use Soot to analyze, instrument, optimize and visualize Java and Android applications. In our case, we use Soot to generate Jimple (or Shimple) facts from Java bytecode to run a pointer or points-to analysis.
     \cite{Sable: Soot}
     
     \thesissubsection{Bytecode To Jimple}
-        Soot is able to translate Java bytecode to a typed 3-address IR, Jimple. Jimple (Java Simple) is a very convinient IR for performing optimizations, it only has 15 statements.
+        Soot is able to translate Java bytecode to a typed 3-address IR, Jimple. Jimple (\textbf{J}ava s\textbf{imple}) is a very convinient IR for performing optimizations, it only has 15 statements.
 
-        First step is a naive translation to untyped Jimple with new local variables. Then Types are inferred to the untyped jimple. An important step is the linearization of expressions to statements only reference at most 3 local variables or constants. The local variables which start with a \$ sign represent stack positions and not local variables in the original program whereas those without \$ represent real local variables.
+        At first, soot translates bytecode to untyped Jimple and introduces new local variables. Then it inferres Types to the untyped jimple. The next step is to linearize all the expressions to statements that only refernce at most 3 local variables or constants. 
         
-        We now describe how Soot handles Java bytecode classes. In a typical case, Soot is launched by specifying the target directory as a parameter. This directory contains the code of the program to analyze, called Application Code (only Java bytecode in this example). First, the \textit{main()} method of the Main class is executed and calls \\
-        \textit{Scene.loadNecessaryClasses()}. This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \\ 
-        \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. When the resolver has a reference to a class source, it calls \textit{resolve()} on it. This methods in turn calls \\ \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class’ methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For instance, if during an analysis with Soot the analysis code calls \\ \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \\ \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
+        In a general case the way Soot handles Java bytecode classes is the following: Soot is launched by specifying a directory with the Application code as a parameter. In this example only Java bytecode, either a class file or a jar. 
+        First, the \textit{main()} method of the Main class is executed and calls \textit{Scene.loadNecessaryClasses()}. This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. Then, the resolver having a reference to a class source, calls \textit{resolve()} on it. This methods in turn calls \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For example, if during an analysis with Soot the analysis code calls \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
+
+    \thesissubsection{Compiling \& Running Soot}
+        \begin{figure}[H]
+            \begin{lstlisting}
+                ant             /* To compile */
+                ant classesjar  /* To generate the sootclasses jar file */
+                ant fulljar     /* To generate the complete soot jar file */
+            \end{lstlisting}
+        \caption{Compiling Soot}
+        \end{figure}
+        \begin{figure}[H]
+            \begin{lstlisting}
+                (create a test.java)
+                javac test.java
+                java -cp ./lib/soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar test
+            \end{lstlisting}
+        \caption{Generating Jimple from .class}
+        \end{figure}
+        \begin{figure}[H]
+            \begin{lstlisting}
+                java -cp soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar -process-dir pathtotest.jar
+            \end{lstlisting}
+        \caption{Generating Jimple from .jar}
+        \end{figure}
 
     \thesissubsection{Jimple Examples}
-        Below are two simple java programs along with their jimple translation. The first one is the classic HelloWorld, and the second is a simple inheritance test that depends on the user's input.
+        Below are two simple java programs along with their jimple translation. The first one is the classic HelloWorld, and the second is a simple inheritance test that depends on the user's input. 
+       	The local variables which start with a \$ sign represent stack positions and not local variables in the original program whereas those without \$ represent real local variables.
         \thesissubsubsection{Hello World}
             \begin{figure}[H]
                 \begin{lstlisting}
@@ -252,37 +271,11 @@
             \caption{inheritanceTest.jimple}
             \end{figure}
 
-    \thesissubsection{Compiling \& Running Soot}
-        \begin{figure}[H]
-            \begin{lstlisting}
-                ant             /* To compile */
-                ant classesjar  /* To generate the sootclasses jar file */
-                ant fulljar     /* To generate the complete soot jar file */
-            \end{lstlisting}
-        \caption{Compiling Soot}
-        \end{figure}
-
-        \begin{figure}[H]
-            \begin{lstlisting}
-                (create a test.java)
-                javac test.java
-                java -cp ./lib/soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar test
-            \end{lstlisting}
-        \caption{Generating Jimple from .class}
-        \end{figure}
-
-        \begin{figure}[H]
-            \begin{lstlisting}
-                java -cp soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar -process-dir pathtotest.jar
-            \end{lstlisting}
-        \caption{Generating Jimple from .jar}
-        \end{figure}
 
 
 
 \thesissection{Four Approaches}
-    Abstract: Linear Fact Generation
-
+    We now describe the main idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). 
     \begin{figure}[H]
         \begin{lstlisting}
             public class FactGenerator {
@@ -313,9 +306,10 @@
         \end{lstlisting}
     \caption{Linear Fact Generation}
     \end{figure}
+    Having the previous basic structure in mind, and considering that \textit{m.retrieveActiveBody()} spends more than 80\% of total fact generation time, we tried to parallelize the method which calls \textit{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. The three of them are pretty much similar while the other one is based on a recursive Java Framework (Fork/Join Framework). 
 
     \thesissubsection{One Thread Per Method}
-        Our first approach to parallelize Fact Generation. Similar as the linear one, but instead of having a loop over all Soot Methods, we create a runnable for each one of them. 
+        Our first approach to parallelize Fact Generation is similar as the sequential one, but instead of having a loop over all Soot Methods and call \textit{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, MethodGenerator, which is identical to FactGenerator and also has a \textit{run()} method to generate sootMethods. 
         \begin{figure}[H]
             \begin{lstlisting}
                 public class FactGenerator {
@@ -347,7 +341,7 @@
         \end{figure}
 
     \thesissubsection{One Thread Per Class}
-        We observed that some threads did not have much work to do, and finishing instantly. All those new allocations and assignments were an overhead. So, in this approach we tried to feed the threads more and we create a new thread for each class, not for each method.  
+        In our second approach, we tried to find out ways to gain more speedup. So, we observed that some threads did not have much work to do and finishing their task instantly. Allocating a new object and assigning to it a task just to finish instantly was an overhead. As a result, we tried to feed the threads more than just a method, we created a new thread for each class, not for each method.  
         \begin{figure}[H]
             \begin{lstlisting}
                 public class FactGenerator {
@@ -381,11 +375,13 @@
         \end{figure}
 
     \thesissubsection{Fork-Join Framework}
-        The fork/join framework is an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.
+        From Oracle's Java Documentation: \\
+    	\textit{"The fork/join framework is an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.}
+    	 
+		\textit{The center of the fork/join framework is the ForkJoinPool class, an extension of the \\ AbstractExecutorService class. ForkJoinPool implements the core work-stealing algorithm and can execute ForkJoinTask processes.}
+    	 
+    	\textit{The idea of using the fork/join framework is to write code that performs a segment of the work. The basic structure should be like the following pseudocode."} \cite{Oracle Java Fork/Join Framework}
 
-        The center of the fork/join framework is the ForkJoinPool class, an extension of the AbstractExecutorService class. ForkJoinPool implements the core work-stealing algorithm and can execute ForkJoinTask processes.
-
-        The idea of using the fork/join framework is to write code that performs a segment of the work. The basic structure should be like the following pseudocode. \cite{Oracle Java Fork/Join Framework}
         \begin{figure}[H]
             \begin{lstlisting}
                 if (my portion of the work is small enough) {
@@ -442,7 +438,9 @@
         \end{figure}
 
     \thesissubsection{Multiple Classes Per Thread}
-        Similar as the second approach, but insted of having one thread per class, now we have one thread per multiple classes. Some threads in the previous approaches did not have much work to do. 
+        Our final approach is similar as the second one, but insted of having one thread per class, we now have one thread per multiple classes. Even in the second approach some threads did not have much work to do. Below is presented in an abstract way the final stage of the code implementing the \textit{Multiple Classes Per Thread} approach.
+
+        Getting away from the overhead produced by assignments and allocations of the first and second approach, this one had so far the best time results.
 
         \begin{figure}[H]
             \begin{lstlisting}
@@ -490,22 +488,15 @@
 
 
 \thesissection{Locking}
-    Threads and locks blah blah blah
+	Along with threads come locks. An incorrect use of locking could have very negative(??) effects on the results. Having more locks than we actually needed would had lead to a time result as slow as the sequential one. Having less, would had lead to races and deadlocks. So, locks should be used very consciously.
 
-    \thesissubsection{Type Assigner}
-		Lock before applying Type Assigner, unlock afterwards.
-    	\begin{figure}[H]
-            \begin{lstlisting}
-		    	lock.lock();
-				PackManager.v().getTransform("jb.tr").apply(b);
-				lock.unlock();
-			\end{lstlisting}
-        \caption{JimpleBodyPack.java}
-        \end{figure}
-
-    \thesissubsection{Fact Writer}
+	Luckily, in our case we used very few locks in both Doop and Soot. Below we explain in more detail.
+    
+    \thesissubsection{Doop Side}
+    	The only two things we had to lock to prevent races and deadlocks were an access to the output file and three methods that accessing a sootMethod.
+    	
     	\thesissubsubsection{CSVDatabase}
-	    	Lock files, to prevent more than one threads to write to the same file. 
+	    	Lock file to prevent more than one thread to write at the same time. 
 	    	\begin{figure}[H]
 	            \begin{lstlisting}
 			    	synchronized(predicateFile) {
@@ -518,32 +509,49 @@
 				\end{lstlisting}
 	        \caption{CSVDatabase.java}
 	        \end{figure}
+
 	    \thesissubsubsection{Represantation}
-	    	Lock files, to prevent more than one threads to write to the same file. 
+	    	The other synchronization we had to provide was in three methods that were accessing SootMethods while threads were active.
 	    	\begin{figure}[H]
 	            \begin{lstlisting}
-			    	public synchronized String signature(SootMethod);
-			    	public synchronized String handler(SootMethod, Trap, Session);
-			    	public synchronized String compactMethod(SootMethod);
+			    	public synchronized String signature(SootMethod) { /*...*/ }
+			    	public synchronized String handler(SootMethod, Trap, Session) { /*...*/ }
+			    	public synchronized String compactMethod(SootMethod) { /*...*/ }
 				\end{lstlisting}
 	        \caption{Represantation.java}
 	        \end{figure}
 
-    \thesissubsection{Pack Manager}
-    	Lock before retrieving Class Hierarchy Analysis, unlock afterwards.
-		\begin{figure}[H]
-            \begin{lstlisting}
-				lock.lock();
-				p.add(new Transform("cg.cha", CHATransformer.v()));
-				p.add(new Transform("cg.spark", SparkTransformer.v()));
-				p.add(new Transform("cg.paddle", PaddleHook.v()));
-				lock.unlock();
-			\end{lstlisting}
-        \caption{PackManager.java}
-        \end{figure}
 
-    \thesissubsection{Shimple -ssa}
-    	Synchronize all Shimple-Body-creation methods.
+    \thesissubsection{Soot Side}
+	    The way Soot is implemented, it has a class that encloses all global objects (\textit{G.java}). As we mentioned before, soot has a class that contains all global objects. Soot does much more than just translating bytecode to jimple, so it has various phases and a lot of different options for transformations given. 
+
+	    \thesissubsubsection{Type Assigner}
+	    	The class \textit{JimpleBodyPack} applies the transformations corresponding to the given options. In our case, it applies a \textit{"jb.tr"} which means \textit{"jimple body transformation"}. From bytecode to jimple translation this is the only pack needed, so we lock before applying Type Assigner and unlock afterwards.
+	    	\begin{figure}[H]
+	            \begin{lstlisting}
+			    	lock.lock();
+					PackManager.v().getTransform("jb.tr").apply(b);
+					lock.unlock();
+				\end{lstlisting}
+	        \caption{JimpleBodyPack.java}
+	        \end{figure}
+
+	    \thesissubsubsection{Pack Manager}
+	    	The class that manages the Packs containing the various phases and their options is \textit{PackManager}. Lock before retrieving Class Hierarchy Analysis, unlock afterwards.
+			\begin{figure}[H]
+	            \begin{lstlisting}
+					lock.lock();
+					p.add(new Transform("cg.cha", CHATransformer.v()));
+					p.add(new Transform("cg.spark", SparkTransformer.v()));
+					p.add(new Transform("cg.paddle", PaddleHook.v()));
+					lock.unlock();
+				\end{lstlisting}
+	        \caption{PackManager.java}
+	        \end{figure}
+
+	    \thesissubsubsection{Shimple -ssa}
+	    	We also use Soot to provide \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. Shimple generation is very similar to jimple but with a few differences. blahblabh prepei na to dw kiallo auto
+	    	The class that handles the translation from jimple to shimple is \textit{Shimple.java}. So far we have synchronized all Shimple-Body-creation methods.
 
 
 \thesissection{Time Results}
@@ -574,7 +582,7 @@
                      coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
                 \addplot[style={ccyan,fill=ccyan,mark=none}]
                      coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-                \legend{Doop-Nexgen, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
+                \legend{Doop, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
             \end{axis}
         \end{tikzpicture}
         \caption{Fact Generation Time Results}
