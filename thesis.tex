@@ -71,6 +71,12 @@
 \listoffigures
 \listoftables
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mmaroon}{HTML}{800000}
+\definecolor{rred}{HTML}{C0504D}
+\definecolor{oorange}{HTML}{FFA500}
+\definecolor{ggreen}{HTML}{9BBB59}
+\definecolor{bblue}{HTML}{4F81BD}
+\definecolor{ccyan}{HTML}{00FFFF}
 \lstset{frame=tb, language=Java, aboveskip=3mm, belowskip=3mm,
     showstringspaces=false, columns=flexible,
     basicstyle={\small\ttfamily}, numbers=left, framexleftmargin=20pt, commentstyle=\color{gray},
@@ -90,11 +96,19 @@
     eisagwgh gia doop kai soot
 
 \thesissection{Doop}
-    Doop is a framework for pointer, or points-to, analysis of Java programs. Doop implements a range of algorithms, including context insensitive, call-site sensitive, and object-sensitive analyses, all specified modularly as variations on a common code base. 
-    \cite{Doop: Framework for Java Pointer Analysis}
+	From Doop Website: \\
+    \textit{"Doop is a framework for pointer, or points-to, analysis of Java programs. Doop implements a range of algorithms, including context insensitive, call-site sensitive, and object-sensitive analyses, all specified modularly as variations on a common code base."}
+
+    \textit{"Doop builds on the idea of specifying pointer analysis algorithms declaratively, using Datalog: a logic-based language for defining (recursive) relations. Doop carries the declarative approach further than past work by describing the full end-to-end analysis in Datalog and optimizing aggressively through exposition of the representation of relations (for example indexing) to the Datalog language level. Doop uses the Datalog dialect and engine of LogicBlox."} 
+    
+    Compared to alternative context-sensitive pointer analysis implementations (such as Paddle) Doop is much faster, and scales better. Also, with comparable context-sensitivity features, Doop is more precise in handling some Java features (for example exceptions) than alternatives. //kati prepei na alla3ei edw..
+
+    Doop is launched by specifying the type of analysis to run and the target directory that contains java bytecode (.jar file). First doop generates the facts and imports them into a database -or more precisely a knowlegdebase- and then it runs the analysis that was asked to. \cite{Doop: Framework for Java Pointer Analysis}
 
     \thesissubsection{Fact Generation}
-        Doop before running a pointer or points-to analysis, intergrates with Soot to generate the facts. Facts are in Jimple (\textbf{J}ava s\textbf{imple}), a typed 3-address IR suitable for performing optimizations, it only has 15 statements. The main problem is that fact generation takes more than 50\% of total execution time. Below are presented a few time examples of the sequential Doop Fact Generation and total execution time (both fact generation and analysis times). 
+        Doop before running a pointer or points-to analysis, intergrates with Soot to generate either Jimple (\textbf{J}ava s\textbf{imple}) or Shimple (a \textbf{S}sa version of J\textbf{imple}) intermidiate representations. Jimple is a typed 3-address IR suitable for performing optimizations; it only has 15 statements. Then from jimple the facts are generated and imported into a database with multiple tables. Shimple is a SSA-version of jimple; obviously first jimple is generated and then Soot applies a transformation pack to jimple body to create shimple. 
+
+        The main problem is that fact generation takes more than 50\% of total execution time (either jimple or shimple). Below are presented a few time examples of the sequential Doop Fact Generation and total execution time (both fact generation and analysis times). 
 
     \thesissubsection{Doop Time Examples}
         \begin{table}[H]
@@ -109,16 +123,45 @@
             \caption{Soot 2.5.0 times}
         \end{table}
 
+    \thesissubsection{Fact Table Example}
+    	here will be a fact table.
 
 
 \thesissection{Soot}
-    Originally, Soot started off as a Java optimization framework. By now, researchers and practitioners from around the world use Soot to analyze, instrument, optimize and visualize Java and Android applications. In our case, we use Soot to generate Jimple (or Shimple) facts from Java bytecode to run a pointer or points-to analysis.
+    Originally, Soot started off as a Java optimization framework. By now, researchers and practitioners from around the world use Soot to analyze, instrument, optimize and visualize Java and Android applications. Soot provides four intermediate representations for analyzing and transforming Java bytecode:
+	\begin{enumerate}
+		\item Baf: a streamlined representation of bytecode which is simple to manipulate.
+		\item Jimple: a typed 3-address intermediate representation suitable for optimization.
+		\item Shimple: an SSA variation of Jimple.
+		\item Grimp: an aggregated version of Jimple suitable for decompilation and code inspection.
+		\item Jimple is Soot’s primary IR and most analyses are implemented on the Jimple level. Custom IRs may be added when desired.
+	\end{enumerate}
+    In our case, we use Soot to generate Jimple (or Shimple) facts from Java bytecode to run a pointer or points-to analysis.
     \cite{Sable: Soot}
     
-    \thesissubsection{Bytecode To Jimple}
-        Soot is able to translate Java bytecode to a typed 3-address IR, Jimple. Jimple (\textbf{J}ava s\textbf{imple}) is a very convinient IR for performing optimizations, it only has 15 statements.
+    \thesissubsection{Applying the latest Soot version}
+    	To minimize the time consumed in fact generation phase, before we tried to parallelize it, we applied the latest (Sept. 2015) Soot version. We faced a lot of compatibility problems in order to use it properly but it gave a speed up of 40\%.
 
-        At first, soot translates bytecode to untyped Jimple and introduces new local variables. Then it inferres Types to the untyped jimple. The next step is to linearize all the expressions to statements that only refernce at most 3 local variables or constants. 
+		\begin{figure}[H]
+			\centering
+			\begin{tikzpicture}
+				\begin{axis}[ width=\textwidth, height=12cm, major x tick style = transparent, ybar=2*\pgflinewidth, bar 		width=14pt, ymajorgrids = true, ylabel = {time (sec)}, symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false, enlarge x limits=0.25, ymin=0, legend cell align=left, legend style={at={(1,1.05)}, anchor=south east, column sep=1ex} ]
+				\addplot[style={rred,fill=rred,mark=none}]
+					coordinates {(antlr, 76) (hsqldb, 83) (batik, 146)};
+				\addplot[style={bblue,fill=bblue,mark=none}]
+                    coordinates {(antlr, 48) (hsqldb, 50) (batik, 63)};
+				\legend{Soot 2.5.0, Soot Latest Version}
+				\end{axis}
+			\end{tikzpicture}
+			\caption{Fact Generation with different Soot versions}
+		\end{figure}
+
+    	Then, to gain more speedup we tried to parallelize the fact generation part. In order to do that, we had to understand the way bytecode is translated to jimple. Below we explain in more detail this procedure. 
+
+    \thesissubsection{Bytecode To Jimple}
+        As we mentioned before, Soot is able to translate Java bytecode to a typed 3-address IR, Jimple. Jimple (\textbf{J}ava s\textbf{imple}) is a very convinient IR for performing optimizations, it only has 15 statements.
+
+        At first, soot translates bytecode to untyped Jimple and introduces new local variables. Then it inferres Types to the untyped jimple. The next step is to linearize all the expressions to statements that only reference at most 3 local variables or constants. 
         
         In a general case the way Soot handles Java bytecode classes is the following: Soot is launched by specifying a directory with the Application code as a parameter. In this example only Java bytecode, either a class file or a jar. 
         First, the \textit{main()} method of the Main class is executed and calls \textit{Scene.loadNecessaryClasses()}. This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. Then, the resolver having a reference to a class source, calls \textit{resolve()} on it. This methods in turn calls \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For example, if during an analysis with Soot the analysis code calls \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
@@ -190,7 +233,6 @@
             \begin{figure}[H]
                 \begin{lstlisting}
                     public class inheritanceTest {
-
                         public static void main(String[] args) {
                             testA a;
                             if (args.length < 1) {
@@ -219,7 +261,6 @@
                                 super(a+100);
                             }
                         }
-
                     }
                 \end{lstlisting}
             \caption{inheritanceTest.java}
@@ -227,7 +268,6 @@
             \begin{figure}[H]
                 \begin{lstlisting}
                     public class inheritanceTest extends java.lang.Object {
-
                         public void <init>() {
                             inheritanceTest r0;
                             r0 := @this: inheritanceTest;
@@ -265,7 +305,6 @@
                             virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r8);
                             return;
                         }
-
                     }
                 \end{lstlisting}
             \caption{inheritanceTest.jimple}
@@ -275,7 +314,7 @@
 
 
 \thesissection{Four Approaches}
-    We now describe the main idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). 
+    We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). 
     \begin{figure}[H]
         \begin{lstlisting}
             public class FactGenerator {
@@ -550,39 +589,30 @@
 	        \end{figure}
 
 	    \thesissubsubsection{Shimple -ssa}
-	    	We also use Soot to provide \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. Shimple generation is very similar to jimple but with a few differences. blahblabh prepei na to dw kiallo auto
+	    	We also use Soot to provide \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. Shimple generation is very similar to jimple but with a few differences. 
+	    	blahblabh prepei na to dw kiallo auto
 	    	The class that handles the translation from jimple to shimple is \textit{Shimple.java}. So far we have synchronized all Shimple-Body-creation methods.
 
 
 \thesissection{Time Results}
+	Below are presented fact generation times for Soot 2.5.0, latest Soot version and all our approaches.  
     \begin{figure}[H]
         \centering
-        \definecolor{mmaroon}{HTML}{800000}
-        \definecolor{rred}{HTML}{C0504D}
-        \definecolor{oorange}{HTML}{FFA500}
-        \definecolor{ggreen}{HTML}{9BBB59}
-        \definecolor{bblue}{HTML}{4F81BD}
-        \definecolor{ccyan}{HTML}{00FFFF}
         \begin{tikzpicture}
-            \begin{axis}[   width=\textwidth, height=12cm, major x tick style = transparent,
-                            ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)},
-                            symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false,
-                            enlarge x limits=0.25, ymin=0, legend cell align=left, 
-                            legend style={at={(1,1.05)}, anchor=south east, column sep=1ex}
-                        ]
+            \begin{axis}[ width=\textwidth, height=12cm, major x tick style = transparent, ybar=2*\pgflinewidth, bar width=14pt, ymajorgrids = true, ylabel = {time (sec)}, symbolic x coords={antlr, hsqldb, batik}, xtick = data, scaled y ticks = false, enlarge x limits=0.25, ymin=0, legend cell align=left, legend style={at={(1,1.05)}, anchor=south east, column sep=1ex} ]
                 \addplot[style={mmaroon,fill=mmaroon,mark=none}]
                     coordinates {(antlr, 75) (hsqldb, 83) (batik, 66)};
                 \addplot[style={rred,fill=rred,mark=none}]
-                     coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
+                    coordinates {(antlr, 49) (hsqldb, 52) (batik, 45)};
                 \addplot[style={oorange,fill=oorange,mark=none}]
-                     coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
+                    coordinates {(antlr, 22) (hsqldb,25) (batik, 22)};
                 \addplot[style={ggreen,fill=ggreen,mark=none}]
-                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
+                    coordinates {(antlr, 13) (hsqldb, 18) (batik, 15)};
                 \addplot[style={bblue,fill=bblue,mark=none}]
-                     coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
+                    coordinates {(antlr, 11) (hsqldb, 17) (batik, 13)};
                 \addplot[style={ccyan,fill=ccyan,mark=none}]
-                     coordinates {(antlr, 12) (hsqldb, 17) (batik, 14)};
-                \legend{Doop, Soot Latest Ver., Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
+                    coordinates {(antlr, 11) (hsqldb, 16) (batik, 12)};
+                \legend{Soot 2.5.0, Soot Latest Version, Fork-Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
             \end{axis}
         \end{tikzpicture}
         \caption{Fact Generation Time Results}
