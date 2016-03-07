@@ -93,6 +93,7 @@
 \tableofcontents
 \listoffigures
 \listoftables
+
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mmaroon}{HTML}{800000}
 \definecolor{rred}{HTML}{C0504D}
@@ -136,13 +137,13 @@
     \thesissubsection{Doop Time Examples}
         \begin{table}[H]
             \centering
-            \label{my-label}
-\begin{tabular}{llll}
-\hline
-\textbf{Soot 2.5.0}      & \textbf{antlr.jar} & \textbf{hsqldb.jar} & \textbf{batik.jar} \\ \hline
-\textbf{Fact Generation} & 1.16 min.          & 1.23 min.           & 2.26 min.          \\
-\textbf{Total time}      & 3.18 min.          & 3.21 min.           & 4.34 min.          \\ \hline
-\end{tabular}
+                \begin{tabular}{llll}
+                \hline
+                \textbf{Soot 2.5.0}      & \textbf{antlr.jar} & \textbf{hsqldb.jar} & \textbf{batik.jar} \\ \hline
+                \textbf{Fact Generation} & 1.16 min.          & 1.23 min.           & 2.26 min.          \\
+                \textbf{Total time}      & 3.18 min.          & 3.21 min.           & 4.34 min.          \\ \hline
+                \end{tabular}
+                \newline
             \caption{Soot 2.5.0 times}
         \end{table}
 
@@ -384,15 +385,16 @@ public class FactGenerator {
     Having the previous basic structure in mind, and considering that \textit{m.retrieveActiveBody()} spends more than 80\% of total fact generation time, we tried to parallelize the method which calls \textit{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. The three of them are pretty much similar while the other one is based on a recursive Java Framework (Fork/Join Framework).
     \begin{table}[H]
 		\centering
-\begin{tabular}{@{}ll@{}}
-\toprule
-\textbf{Jars} & \textbf{Time (sec.)} \\ \midrule
-antlr          & 48                    \\
-eclipse        & 27                    \\
-jython         & 32                    \\
-hsqldb         & 50                    \\
-batik          & 63                    \\ \bottomrule
-\end{tabular}
+        \begin{tabular}{@{}ll@{}}
+        \toprule
+        \textbf{Jars} & \textbf{Time (sec.)} \\ \midrule
+        antlr          & 48                    \\
+        eclipse        & 27                    \\
+        jython         & 32                    \\
+        hsqldb         & 50                    \\
+        batik          & 63                    \\ \bottomrule
+        \end{tabular}
+        \newline
 		\caption{Sequential Fact Generation Time Examples}
 	\end{table}
 
@@ -430,16 +432,17 @@ public class MethodGenerator {
 
 		\begin{table}[H]
 			\centering
-\begin{tabular}{@{}l|lll@{}}
-\toprule
-\textbf{Jars}    	& \multicolumn{3}{l}{\textbf{Time (sec.)}}  \\ \midrule
-\textbf{Pool Size} 	& \textbf{4}  & \textbf{16}  & \textbf{32}  \\ \midrule
-antlr            	& 21          & 14           & 13           \\
-eclipse          	& 13          & 7            & 8            \\
-jython           	& 14          & 9            & 9            \\
-hsqldb           	& 23          & 15           & 16           \\
-batik            	& 26          & 23           & 18           \\ \bottomrule
-\end{tabular}
+            \begin{tabular}{@{}l|lll@{}}
+            \toprule
+            \textbf{Jars}    	& \multicolumn{3}{l}{\textbf{Time (sec.)}}  \\ \midrule
+            \textbf{Pool Size} 	& \textbf{4}  & \textbf{16}  & \textbf{32}  \\ \midrule
+            antlr            	& 21          & 14           & 13           \\
+            eclipse          	& 13          & 7            & 8            \\
+            jython           	& 14          & 9            & 9            \\
+            hsqldb           	& 23          & 15           & 16           \\
+            batik            	& 26          & 23           & 18           \\ \bottomrule
+            \end{tabular}
+            \newline
 			\caption{One Thread Per Method Time Examples, with pool size: 4, 16, 32}
 		\end{table}
 
@@ -481,16 +484,17 @@ public class ClassGenerator {
 
         \begin{table}[H]
 			\centering
-\begin{tabular}{@{}l|lll@{}}
-\toprule
-\textbf{Jars}    	& \multicolumn{3}{l}{\textbf{Time (sec.)}}  \\ \midrule
-\textbf{Pool Size} 	& \textbf{4}  & \textbf{16}  & \textbf{32}  \\ \midrule
-antlr            	& 21          & 14           & 13           \\
-eclipse          	& 13          & 7            & 8            \\
-jython           	& 14          & 9            & 9            \\
-hsqldb           	& 23          & 15           & 16           \\
-batik            	& 26          & 23           & 18           \\ \bottomrule
-\end{tabular}
+            \begin{tabular}{@{}l|lll@{}}
+            \toprule
+            \textbf{Jars}    	& \multicolumn{3}{l}{\textbf{Time (sec.)}}  \\ \midrule
+            \textbf{Pool Size} 	& \textbf{4}  & \textbf{16}  & \textbf{32}  \\ \midrule
+            antlr            	& 21          & 14           & 13           \\
+            eclipse          	& 13          & 7            & 8            \\
+            jython           	& 14          & 9            & 9            \\
+            hsqldb           	& 23          & 15           & 16           \\
+            batik            	& 26          & 23           & 18           \\ \bottomrule
+            \end{tabular}
+            \newline
 			\caption{One Thread Per Class Time Examples, with pool size: 4, 16, 32}
 		\end{table}
 
@@ -560,16 +564,17 @@ public class ClassGenerator {
 
 		\begin{table}[H]
 			\centering
-\begin{tabular}{@{}l|lll@{}}
-\toprule
-\textbf{Jars}    	& \multicolumn{3}{l}{\textbf{Time (sec.)}}  \\ \midrule
-\textbf{Threshold (classes to generate)} 	& \textbf{2}  & \textbf{3}  & \textbf{4}  \\ \midrule
-antlr            	& 21          & 14           & 13           \\
-eclipse          	& 13          & 7            & 8            \\
-jython           	& 14          & 9            & 9            \\
-hsqldb           	& 23          & 15           & 16           \\
-batik            	& 26          & 23           & 18           \\ \bottomrule
-\end{tabular}
+            \begin{tabular}{@{}l|lll@{}}
+            \toprule
+            \textbf{Jars}    	& \multicolumn{3}{l}{\textbf{Time (sec.)}}  \\ \midrule
+            \textbf{Threshold (classes to generate)} 	& \textbf{2}  & \textbf{3}  & \textbf{4}  \\ \midrule
+            antlr            	& 21          & 14           & 13           \\
+            eclipse          	& 13          & 7            & 8            \\
+            jython           	& 14          & 9            & 9            \\
+            hsqldb           	& 23          & 15           & 16           \\
+            batik            	& 26          & 23           & 18           \\ \bottomrule
+            \end{tabular}
+            \newline
 			\caption{Fork/Join Time Examples, with threshold 2, 3, 4 and pool size 16}
 		\end{table}
 
@@ -624,24 +629,24 @@ public class ThreadFactory {
         \end{figure}
 
 \begin{table}[H]
-
-\centering
-\begin{tabular}{@{}lc|lll@{}}
-\toprule
-\textbf{}     & \multicolumn{1}{l|}{\textbf{}}                                                      & \multicolumn{3}{l}{\textbf{Time (sec.)}}                                                                                                                          \\
-\textbf{Jars} & \textbf{\begin{tabular}[c]{@{}c@{}}Classes Per Thread \\ Pool Size\end{tabular}} & \textbf{2}                                           & \textbf{3}                                           & \textbf{4}                                           \\ \midrule
-antlr         & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}22\\ 13\\ 14\end{tabular} & \begin{tabular}[c]{@{}l@{}}18\\ 12\\ 13\end{tabular} & \begin{tabular}[c]{@{}l@{}}19\\ 14\\ 13\end{tabular} \\
-              & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
-eclipse       & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}12\\ 7\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}10\\ 8\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}11\\ 6\\ 8\end{tabular}   \\
-              & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
-jython        & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}13\\ 11\\ 9\end{tabular}  & \begin{tabular}[c]{@{}l@{}}14\\ 7\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}13\\ 9\\ 8\end{tabular}   \\
-              & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
-hsqldb        & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}25\\ 17\\ 16\end{tabular} & \begin{tabular}[c]{@{}l@{}}22\\ 14\\ 18\end{tabular} & \begin{tabular}[c]{@{}l@{}}20\\ 16\\ 14\end{tabular} \\
-              & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
-batik         & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}23\\ 22\\ 21\end{tabular} & \begin{tabular}[c]{@{}l@{}}24\\ 20\\ 17\end{tabular} & \begin{tabular}[c]{@{}l@{}}25\\ 17\\ 17\end{tabular} \\ \bottomrule
-\end{tabular}
-\caption{Multiple Classes Per Thread Time Examples, \\with pool size: 4, 16, 32 and classes per thread: 2, 3, 4}
-\end{table}
+        \centering
+        \begin{tabular}{@{}lc|lll@{}}
+        \toprule
+        \textbf{}     & \multicolumn{1}{l|}{\textbf{}}                                                      & \multicolumn{3}{l}{\textbf{Time (sec.)}}                                                                                                                          \\
+        \textbf{Jars} & \textbf{\begin{tabular}[c]{@{}c@{}}Classes Per Thread \\ Pool Size\end{tabular}} & \textbf{2}                                           & \textbf{3}                                           & \textbf{4}                                           \\ \midrule
+        antlr         & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}22\\ 13\\ 14\end{tabular} & \begin{tabular}[c]{@{}l@{}}18\\ 12\\ 13\end{tabular} & \begin{tabular}[c]{@{}l@{}}19\\ 14\\ 13\end{tabular} \\
+                      & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
+        eclipse       & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}12\\ 7\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}10\\ 8\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}11\\ 6\\ 8\end{tabular}   \\
+                      & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
+        jython        & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}13\\ 11\\ 9\end{tabular}  & \begin{tabular}[c]{@{}l@{}}14\\ 7\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}13\\ 9\\ 8\end{tabular}   \\
+                      & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
+        hsqldb        & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}25\\ 17\\ 16\end{tabular} & \begin{tabular}[c]{@{}l@{}}22\\ 14\\ 18\end{tabular} & \begin{tabular}[c]{@{}l@{}}20\\ 16\\ 14\end{tabular} \\
+                      & \multicolumn{1}{l|}{}                                                               &                                                      &                                                      &                                                      \\
+        batik         & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}23\\ 22\\ 21\end{tabular} & \begin{tabular}[c]{@{}l@{}}24\\ 20\\ 17\end{tabular} & \begin{tabular}[c]{@{}l@{}}25\\ 17\\ 17\end{tabular} \\ \bottomrule
+        \end{tabular}
+        \newline
+        \caption{Multiple Classes Per Thread Time Examples, with pool size: 4, 16, 32 and classes per thread: 2, 3, 4}
+        \end{table}
 
 
         \begin{figure}[H]
@@ -771,39 +776,21 @@ lock.unlock();
 
     In conclusion, just changing the soot version and applying the latest one gave a speedup up to 30-40\%. With the latest soot-version and our best approach we achived a speedup of 60-80\%. Our third attempt (Fork/Join Framework) was not a successful one, it was better than the sequential fact generation (obviously) but not as good as the other three. 
 
-%     \begin{table}[]
-%     \centering
-% \begin{tabular}{@{}l|llllllll@{}}
-% \toprule
-% jars:            & \textbf{Sequen.} & \textit{thrshld}                                     & \textbf{Fork/Join}                              & \textit{thrds}                                             & \textbf{Method}                                      & \textbf{Class}                                       & \textbf{3-Classes}                                   & \textbf{4-Classes}                                   \\ \midrule
-% \textbf{antlr}   & 48               & \textit{\begin{tabular}[c]{@{}l@{}}2\\ 3\end{tabular}} & \begin{tabular}[c]{@{}l@{}}23\\ 25\end{tabular} & \textit{\begin{tabular}[c]{@{}l@{}}4\\ 16\\ 32\end{tabular}} & \begin{tabular}[c]{@{}l@{}}21\\ 14\\ 13\end{tabular} & \begin{tabular}[c]{@{}l@{}}20\\ 14\\ 13\end{tabular} & \begin{tabular}[c]{@{}l@{}}18\\ 12\\ 13\end{tabular} & \begin{tabular}[c]{@{}l@{}}19\\ 14\\ 13\end{tabular} \\
-%                  &                  &                                                        &                                                 &                                                              &                                                      &                                                      &                                                      &                                                      \\
-% \textbf{eclipse} & 27               & \textit{\begin{tabular}[c]{@{}l@{}}2\\ 3\end{tabular}} & \begin{tabular}[c]{@{}l@{}}13\\ 15\end{tabular} & \textit{\begin{tabular}[c]{@{}l@{}}4\\ 16\\ 32\end{tabular}} & \begin{tabular}[c]{@{}l@{}}13\\ 7\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}11\\ 7\\ 7\end{tabular}   & \begin{tabular}[c]{@{}l@{}}10\\ 8\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}11\\ 6\\ 8\end{tabular}   \\
-%                  &                  &                                                        &                                                 &                                                              &                                                      &                                                      &                                                      &                                                      \\
-% \textbf{jython}  & 32               & \textit{\begin{tabular}[c]{@{}l@{}}2\\ 3\end{tabular}} & \begin{tabular}[c]{@{}l@{}}16\\ 17\end{tabular} & \textit{\begin{tabular}[c]{@{}l@{}}4\\ 16\\ 32\end{tabular}} & \begin{tabular}[c]{@{}l@{}}14\\ 9\\ 9\end{tabular}   & \begin{tabular}[c]{@{}l@{}}13\\ 8\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}14\\ 7\\ 8\end{tabular}   & \begin{tabular}[c]{@{}l@{}}13\\ 9\\ 8\end{tabular}   \\
-%                  &                  &                                                        &                                                 &                                                              &                                                      &                                                      &                                                      &                                                      \\
-% \textbf{hsqldb}  & 50               & \textit{\begin{tabular}[c]{@{}l@{}}2\\ 3\end{tabular}} & \begin{tabular}[c]{@{}l@{}}25\\ 28\end{tabular} & \textit{\begin{tabular}[c]{@{}l@{}}4\\ 16\\ 32\end{tabular}} & \begin{tabular}[c]{@{}l@{}}23\\ 15\\ 16\end{tabular} & \begin{tabular}[c]{@{}l@{}}22\\ 15\\ 18\end{tabular} & \begin{tabular}[c]{@{}l@{}}22\\ 14\\ 18\end{tabular} & \begin{tabular}[c]{@{}l@{}}20\\ 16\\ 14\end{tabular} \\
-%                  &                  &                                                        &                                                 &                                                              &                                                      &                                                      &                                                      &                                                      \\
-% \textbf{batik}   & 63               & \textit{\begin{tabular}[c]{@{}l@{}}2\\ 3\end{tabular}} & \begin{tabular}[c]{@{}l@{}}34\\ 37\end{tabular} & \textit{\begin{tabular}[c]{@{}l@{}}4\\ 16\\ 32\end{tabular}} & \begin{tabular}[c]{@{}l@{}}26\\ 23\\ 18\end{tabular} & \begin{tabular}[c]{@{}l@{}}26\\ 18\\ 19\end{tabular} & \begin{tabular}[c]{@{}l@{}}24\\ 20\\ 17\end{tabular} & \begin{tabular}[c]{@{}l@{}}25\\ 17\\ 17\end{tabular} \\ \bottomrule
-% \end{tabular}
-%     \caption{Summarizing times (seconds)}
-%     \end{table}
-
-\begin{table}[H]
-\centering
-\label{my-label}
-\begin{tabular}{@{}l|lllll@{}}
-\toprule
-\textbf{Jars}     & \multicolumn{5}{c}{\textbf{Time (sec.)}}                                                                           \\ \midrule
-\textbf{Approach} & \textbf{Sequential} & \textbf{Fork/Join} & \textbf{Thread/Method} & \textbf{Thread/Class} & \textbf{Thread/Classes} \\ \midrule
-antlr             & 48                  & 23                 & 13                     & 13                    & 12                      \\
-eclipse           & 27                  & 13                 & 7                      & 7                     & 6                       \\
-jython            & 32                  & 16                 & 8                      & 8                     & 7                       \\
-hsqldb            & 50                  & 25                 & 15                     & 14                    & 14                      \\
-batik             & 63                  & 34                 & 18                     & 17                    & 17                      \\ \bottomrule
-\end{tabular}
-\caption{Summarizing best times of all approaches with pool size 16-32}
-\end{table}
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{@{}l|lllll@{}}
+    \toprule
+    \textbf{Jars}     & \multicolumn{5}{c}{\textbf{Time (sec.)}}                                                                           \\ \midrule
+    \textbf{Approach} & \textbf{Sequential} & \textbf{Fork/Join} & \textbf{Thread/Method} & \textbf{Thread/Class} & \textbf{Thread/Classes} \\ \midrule
+    antlr             & 48                  & 23                 & 13                     & 13                    & 12                      \\
+    eclipse           & 27                  & 13                 & 7                      & 7                     & 6                       \\
+    jython            & 32                  & 16                 & 8                      & 8                     & 7                       \\
+    hsqldb            & 50                  & 25                 & 15                     & 14                    & 14                      \\
+    batik             & 63                  & 34                 & 18                     & 17                    & 17                      \\ \bottomrule
+    \end{tabular}
+    \newline
+    \caption{Summarizing best times of all approaches with pool size 16-32}
+    \end{table}
 
 
 
