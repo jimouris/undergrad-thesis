@@ -147,8 +147,21 @@
         \end{table}
 
     \thesissubsection{Fact Table Example}
-    	here will be a fact table.
-
+    	Here are presented some of the facts that created for the \textit{helloWorld} example. 
+    	\begin{figure}[H]
+\begin{lstlisting}
+facts/ActualParam.facts:0	helloWorld.main/java.io.PrintStream.println/0	helloWorld.main/$stringconstant0
+facts/ApplicationClass.facts:helloWorld
+facts/AssignHeapAllocation.facts:helloWorld.main/invoke/instruction3	3	helloWorld	helloWorld.main/$stringconstant0	<helloWorld: void main(java.lang.String[])>
+facts/AssignLocal.facts:helloWorld.<init>/definition/instruction1	1	helloWorld.<init>/@this	helloWorld.<init>/r0	<helloWorld: void <init>()>
+facts/AssignLocal.facts:helloWorld.main/definition/instruction1	1	helloWorld.main/@param0	helloWorld.main/r0	<helloWorld: void main(java.lang.String[])>
+facts/ClassObject.facts:<class helloWorld>	java.lang.Class	helloWorld
+facts/ClassType.facts:helloWorld
+/* ... */
+\end{lstlisting}
+        \caption{Facts Example}
+        \end{figure}
+    	
 
 \thesissection{Soot}
     Originally, Soot started off as a Java optimization framework. By now, researchers and practitioners from around the world use Soot to analyze, instrument, optimize and visualize Java and Android applications. Soot provides four intermediate representations for analyzing and transforming Java bytecode:
@@ -191,25 +204,25 @@
 
     \thesissubsection{Compiling \& Running Soot}
         \begin{figure}[H]
-            \begin{lstlisting}
-                ant             /* To compile */
-                ant classesjar  /* To generate the sootclasses jar file */
-                ant fulljar     /* To generate the complete soot jar file */
-            \end{lstlisting}
+\begin{lstlisting}
+ant             /* To compile */
+ant classesjar  /* To generate the sootclasses jar file */
+ant fulljar     /* To generate the complete soot jar file */
+\end{lstlisting}
         \caption{Compiling Soot}
         \end{figure}
         \begin{figure}[H]
-            \begin{lstlisting}
-                (create a test.java)
-                javac test.java
-                java -cp ./lib/soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar test
-            \end{lstlisting}
+\begin{lstlisting}
+(create a test.java)
+javac test.java
+java -cp ./lib/soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar test
+\end{lstlisting}
         \caption{Generating Jimple from .class}
         \end{figure}
         \begin{figure}[H]
-            \begin{lstlisting}
-                java -cp soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar -process-dir pathtotest.jar
-            \end{lstlisting}
+\begin{lstlisting}
+java -cp soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar -process-dir pathtotest.jar
+\end{lstlisting}
         \caption{Generating Jimple from .jar}
         \end{figure}
 
@@ -218,118 +231,118 @@
        	The local variables which start with a \$ sign represent stack positions and not local variables in the original program whereas those without \$ represent real local variables.
         \thesissubsubsection{Hello World}
             \begin{figure}[H]
-                \begin{lstlisting}
-                    public class helloWorld {
-                       public static void main(String[] args) {
-                           System.out.println("Hello, World");
-                       }
-                    }
-                \end{lstlisting}
+\begin{lstlisting}
+public class helloWorld {
+   public static void main(String[] args) {
+       System.out.println("Hello, World");
+   }
+}
+\end{lstlisting}
             \caption{HelloWorld.java}
             \end{figure}
             \begin{figure}[H]
-                \begin{lstlisting}
-                    public class helloWorld extends java.lang.Object {
+\begin{lstlisting}
+public class helloWorld extends java.lang.Object {
 
-                        public void <init>() {
-                            helloWorld r0;
-                            r0 := @this: helloWorld;
-                            specialinvoke r0.<java.lang.Object: void <init>()>();
-                            return;
-                        }
+    public void <init>() {
+        helloWorld r0;
+        r0 := @this: helloWorld;
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+        return;
+    }
 
-                        public static void main(java.lang.String[]) {
-                            java.lang.String[] r0;
-                            java.io.PrintStream $r1;
-                            r0 := @parameter0: java.lang.String[];
-                            $r1 = <java.lang.System: java.io.PrintStream out>;
-                            virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Hello, World");
-                            return;
-                        }
+    public static void main(java.lang.String[]) {
+        java.lang.String[] r0;
+        java.io.PrintStream $r1;
+        r0 := @parameter0: java.lang.String[];
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Hello, World");
+        return;
+    }
 
-                    }
-                \end{lstlisting}
+}
+\end{lstlisting}
             \caption{HelloWorld.jimple}
             \end{figure}
 
         \thesissubsubsection{Inheritance Test}
             \begin{figure}[H]
-                \begin{lstlisting}
-                    public class inheritanceTest {
-                        public static void main(String[] args) {
-                            testA a;
-                            if (args.length < 1) {
-                                a = new testA(5);
-                            } else {
-                                a = new testB(5);
-                            }
-                            int result = a.getA();
-                            System.out.println("the value of a is " + result);
-                        }
+\begin{lstlisting}
+public class inheritanceTest {
+    public static void main(String[] args) {
+        testA a;
+        if (args.length < 1) {
+            a = new testA(5);
+        } else {
+            a = new testB(5);
+        }
+        int result = a.getA();
+        System.out.println("the value of a is " + result);
+    }
 
-                        public static class testA {
-                            int a;
+    public static class testA {
+        int a;
 
-                            public testA(int a) {
-                                this.a = a;
-                            }
+        public testA(int a) {
+            this.a = a;
+        }
 
-                            public int getA() {
-                                return this.a;
-                            }
-                        }
+        public int getA() {
+            return this.a;
+        }
+    }
 
-                        public static class testB extends testA {
-                            public testB(int a) {
-                                super(a+100);
-                            }
-                        }
-                    }
-                \end{lstlisting}
+    public static class testB extends testA {
+        public testB(int a) {
+            super(a+100);
+        }
+    }
+}
+\end{lstlisting}
             \caption{inheritanceTest.java}
             \end{figure}
             \begin{figure}[H]
-                \begin{lstlisting}
-                    public class inheritanceTest extends java.lang.Object {
-                        public void <init>() {
-                            inheritanceTest r0;
-                            r0 := @this: inheritanceTest;
-                            specialinvoke r0.<java.lang.Object: void <init>()>();
-                            return;
-                        }
+\begin{lstlisting}
+public class inheritanceTest extends java.lang.Object {
+    public void <init>() {
+        inheritanceTest r0;
+        r0 := @this: inheritanceTest;
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+        return;
+    }
 
-                        public static void main(java.lang.String[]) {
-                            java.lang.String[] r0;
-                            int $i0, i1;
-                            inheritanceTest$testA $r1, r2;
-                            inheritanceTest$testB $r3;
-                            java.io.PrintStream $r4;
-                            java.lang.StringBuilder $r5, $r6, $r7;
-                            java.lang.String $r8;
-                            r0 := @parameter0: java.lang.String[];
-                            $i0 = lengthof r0;
-                            if $i0 >= 1 goto label1;
-                            $r1 = new inheritanceTest$testA;
-                            specialinvoke $r1.<inheritanceTest$testA: void <init>(int)>(5);
-                            r2 = $r1;
-                            goto label2;
-                         label1:
-                            $r3 = new inheritanceTest$testB;
-                            specialinvoke $r3.<inheritanceTest$testB: void <init>(int)>(5);
-                            r2 = $r3;
-                         label2:
-                            i1 = virtualinvoke r2.<inheritanceTest$testA: int getA()>();
-                            $r4 = <java.lang.System: java.io.PrintStream out>;
-                            $r5 = new java.lang.StringBuilder;
-                            specialinvoke $r5.<java.lang.StringBuilder: void <init>()>();
-                            $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("the value of a is ");
-                            $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
-                            $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.String toString()>();
-                            virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r8);
-                            return;
-                        }
-                    }
-                \end{lstlisting}
+    public static void main(java.lang.String[]) {
+        java.lang.String[] r0;
+        int $i0, i1;
+        inheritanceTest$testA $r1, r2;
+        inheritanceTest$testB $r3;
+        java.io.PrintStream $r4;
+        java.lang.StringBuilder $r5, $r6, $r7;
+        java.lang.String $r8;
+        r0 := @parameter0: java.lang.String[];
+        $i0 = lengthof r0;
+        if $i0 >= 1 goto label1;
+        $r1 = new inheritanceTest$testA;
+        specialinvoke $r1.<inheritanceTest$testA: void <init>(int)>(5);
+        r2 = $r1;
+        goto label2;
+     label1:
+        $r3 = new inheritanceTest$testB;
+        specialinvoke $r3.<inheritanceTest$testB: void <init>(int)>(5);
+        r2 = $r3;
+     label2:
+        i1 = virtualinvoke r2.<inheritanceTest$testA: int getA()>();
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+        $r5 = new java.lang.StringBuilder;
+        specialinvoke $r5.<java.lang.StringBuilder: void <init>()>();
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("the value of a is ");
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.String toString()>();
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r8);
+        return;
+    }
+}
+\end{lstlisting}
             \caption{inheritanceTest.jimple}
             \end{figure}
 
@@ -338,33 +351,33 @@
 \thesissection{Four Approaches}
     We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). 
     \begin{figure}[H]
-        \begin{lstlisting}
-            public class FactGenerator {
-                /* ... */
+\begin{lstlisting}
+public class FactGenerator {
+    /* ... */
 
-                public void generate(sootClass) {
-                    if(c.hasSuperclass() && !c.isInterface())
-                        _writer.writeDirectSuperclass(c, c.getSuperclass());
-                    for(SootField f : c.getFields())
-                        generate(f);
-                    for(SootMethod m : c.getMethods()) {
-                        Session session = new Session();
-                        generate(m, session);
-                    }
-                }
+    public void generate(sootClass) {
+        if(c.hasSuperclass() && !c.isInterface())
+            _writer.writeDirectSuperclass(c, c.getSuperclass());
+        for(SootField f : c.getFields())
+            generate(f);
+        for(SootMethod m : c.getMethods()) {
+            Session session = new Session();
+            generate(m, session);
+        }
+    }
 
-                public void generate(SootMethod m, Session session) {
-                    /* ... */
-                    
-                    /* This instruction spends more than 80% of FG time */
-                    m.retrieveActiveBody() 
-                    
-                    /* ... */
-                }
+    public void generate(SootMethod m, Session session) {
+        /* ... */
+        
+        /* This instruction spends more than 80% of FG time */
+        m.retrieveActiveBody() 
+        
+        /* ... */
+    }
 
-                /* ... */
-            }
-        \end{lstlisting}
+    /* ... */
+}
+\end{lstlisting}
     \caption{Linear Fact Generation}
     \end{figure}
     Having the previous basic structure in mind, and considering that \textit{m.retrieveActiveBody()} spends more than 80\% of total fact generation time, we tried to parallelize the method which calls \textit{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. The three of them are pretty much similar while the other one is based on a recursive Java Framework (Fork/Join Framework). 
@@ -372,66 +385,66 @@
     \thesissubsection{One Thread Per Method}
         Our first approach to parallelize Fact Generation is similar as the sequential one, but instead of having a loop over all Soot Methods and call \textit{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, MethodGenerator, which is identical to FactGenerator and also has a \textit{run()} method to generate sootMethods. 
         \begin{figure}[H]
-            \begin{lstlisting}
-                public class FactGenerator {
-                    private ExecutorService MgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-                    /* ... */
+\begin{lstlisting}
+public class FactGenerator {
+    private ExecutorService MgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    /* ... */
 
-                    public void generate(sootClass) {
-                        if(c.hasSuperclass() && !c.isInterface())
-                            _writer.writeDirectSuperclass(c, c.getSuperclass());
-                        for(SootField f : c.getFields())
-                            generate(f);
-                        for(SootMethod m : c.getMethods()) {
-                            Session session = new Session();
-                            Runnable mg = new MethodGenerator();
-                            MgExecutor.execute(mg);
-                        }
-                    }
-                }
+    public void generate(sootClass) {
+        if(c.hasSuperclass() && !c.isInterface())
+            _writer.writeDirectSuperclass(c, c.getSuperclass());
+        for(SootField f : c.getFields())
+            generate(f);
+        for(SootMethod m : c.getMethods()) {
+            Session session = new Session();
+            Runnable mg = new MethodGenerator();
+            MgExecutor.execute(mg);
+        }
+    }
+}
 
-                public class MethodGenerator {
-                    public void run() {
-                        generate(this.m, this.s)
-                    }
+public class MethodGenerator {
+    public void run() {
+        generate(this.m, this.s)
+    }
 
-                    /* ... */
-                }
-            \end{lstlisting}
+    /* ... */
+}
+\end{lstlisting}
         \caption{One Thread Per Method}
         \end{figure}
 
     \thesissubsection{One Thread Per Class}
         In our second approach, we tried to find out ways to gain more speedup. So, we observed that some threads did not have much work to do and finishing their task instantly. Allocating a new object and assigning to it a task just to finish instantly was an overhead. As a result, we tried to feed the threads more than just a method, we created a new thread for each class, not for each method.  
         \begin{figure}[H]
-            \begin{lstlisting}
-                public class FactGenerator {
-                    private ExecutorService CgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-                    /* ... */
+\begin{lstlisting}
+public class FactGenerator {
+    private ExecutorService CgExecutor = new ThreadPoolExecutor(8, 16, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    /* ... */
 
-                    public void generate(sootClass) {
-                        Runnable cg = new ClassGenerator();
-                        CgExecutor.execute(cg);
-                    }
-                }
+    public void generate(sootClass) {
+        Runnable cg = new ClassGenerator();
+        CgExecutor.execute(cg);
+    }
+}
 
-                public class ClassGenerator {
-                    public void run() {
-                        if(c.hasSuperclass() && !c.isInterface())
-                            _writer.writeDirectSuperclass(c, c.getSuperclass());
-                        for(SootField f : c.getFields())
-                            generate(f);
-                        for(SootMethod m : c.getMethods()) {
-                            Session session = new Session();
-                            Runnable mg = new MethodGenerator();
-                            MgExecutor.execute(mg);
-                            generate(m, session);
-                        }
-                    }
+public class ClassGenerator {
+    public void run() {
+        if(c.hasSuperclass() && !c.isInterface())
+            _writer.writeDirectSuperclass(c, c.getSuperclass());
+        for(SootField f : c.getFields())
+            generate(f);
+        for(SootMethod m : c.getMethods()) {
+            Session session = new Session();
+            Runnable mg = new MethodGenerator();
+            MgExecutor.execute(mg);
+            generate(m, session);
+        }
+    }
 
-                    /* ... */
-                }
-            \end{lstlisting}
+    /* ... */
+}
+\end{lstlisting}
         \caption{One Thread Per Class}
         \end{figure}
 
@@ -444,57 +457,57 @@
     	\textit{The idea of using the fork/join framework is to write code that performs a segment of the work. The basic structure should be like the following pseudocode."} \cite{Oracle Java Fork/Join Framework}
 
         \begin{figure}[H]
-            \begin{lstlisting}
-                if (my portion of the work is small enough) {
-                    do the work directly
-                } else {
-                    split my work into two pieces
-                    invoke the two pieces and wait for the results
-                }
-            \end{lstlisting}
+\begin{lstlisting}
+if (my portion of the work is small enough) {
+    do the work directly
+} else {
+    split my work into two pieces
+    invoke the two pieces and wait for the results
+}
+\end{lstlisting}
         \caption{Fork-Join Basic-Use}
         \end{figure}
 
         \begin{figure}[H]
-            \begin{lstlisting}
-                public class FactGenerator {
-                    private ForkJoinPool classGeneratorPool = new ForkJoinPool();
-                    /* ... */
-                    public void generate(sootClass) {
-                        if(c.hasSuperclass() && !c.isInterface())
-                            _writer.writeDirectSuperclass(c, c.getSuperclass());
-                        for(SootClass i : c.getInterfaces())
-                            _writer.writeDirectSuperinterface(c, i);
-                        for(SootField f : c.getFields())
-                            generate(f);
-                        if (c.getMethods().size() > 0) {
-                            ClassGenerator classGenerator = new ClassGenerator(_writer, _ssa, c, 0, c.getMethods().size());
-                            classGeneratorPool.invoke(classGenerator);
-                        }
-                    }
-                }
+\begin{lstlisting}
+public class FactGenerator {
+    private ForkJoinPool classGeneratorPool = new ForkJoinPool();
+    /* ... */
+    public void generate(sootClass) {
+        if(c.hasSuperclass() && !c.isInterface())
+            _writer.writeDirectSuperclass(c, c.getSuperclass());
+        for(SootClass i : c.getInterfaces())
+            _writer.writeDirectSuperinterface(c, i);
+        for(SootField f : c.getFields())
+            generate(f);
+        if (c.getMethods().size() > 0) {
+            ClassGenerator classGenerator = new ClassGenerator(_writer, _ssa, c, 0, c.getMethods().size());
+            classGeneratorPool.invoke(classGenerator);
+        }
+    }
+}
 
-                public class ClassGenerator {
-                    /* ... */
-                    public void compute() {
-                        List<SootMethod> sootMethods = _sootClass.getMethods();
-                        /* if (my portion of the work is small enough) */
-                        if (_to - _from < threshold) {
-                            for (int i = _from ; i < _to ; i++) {
-                                SootMethod m = sootMethods.get(i);
-                                Session session = new Session();
-                                generate(m, session);
-                            }
-                        } else { /* split work*/
-                            int half = (_to - _from)/2;
-                            ClassGenerator c1 = new ClassGenerator(_writer, _ssa, _sootClass, _from, _from + half);
-                            ClassGenerator c2 = new ClassGenerator(_writer, _ssa, _sootClass, _from + half, _to);
-                            invokeAll(c1, c2);
-                        }
-                    }
-                    /* ... */
-                }
-            \end{lstlisting}
+public class ClassGenerator {
+    /* ... */
+    public void compute() {
+        List<SootMethod> sootMethods = _sootClass.getMethods();
+        /* if (my portion of the work is small enough) */
+        if (_to - _from < threshold) {
+            for (int i = _from ; i < _to ; i++) {
+                SootMethod m = sootMethods.get(i);
+                Session session = new Session();
+                generate(m, session);
+            }
+        } else { /* split work*/
+            int half = (_to - _from)/2;
+            ClassGenerator c1 = new ClassGenerator(_writer, _ssa, _sootClass, _from, _from + half);
+            ClassGenerator c2 = new ClassGenerator(_writer, _ssa, _sootClass, _from + half, _to);
+            invokeAll(c1, c2);
+        }
+    }
+    /* ... */
+}
+\end{lstlisting}
         \caption{Fork-Join Framework}
         \end{figure}
 
@@ -504,46 +517,46 @@
         Getting away from the overhead produced by assignments and allocations of the first and second approach, this one had so far the best time results.
 
         \begin{figure}[H]
-            \begin{lstlisting}
-                public class Driver {
-                    public Driver(ThreadFactory factory, boolean ssa, int totalClasses) {
-                        _factory = factory;
-                        _ssa = ssa;
-                        _classCounter = 0;
-                        _sootClasses = new ArrayList<>();
-                        _totalClasses = totalClasses;
-                        _cores = Runtime.getRuntime().availableProcessors();
-                        _executor = new ThreadPoolExecutor(_cores/2, _cores, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-                    }
+\begin{lstlisting}
+public class Driver {
+    public Driver(ThreadFactory factory, boolean ssa, int totalClasses) {
+        _factory = factory;
+        _ssa = ssa;
+        _classCounter = 0;
+        _sootClasses = new ArrayList<>();
+        _totalClasses = totalClasses;
+        _cores = Runtime.getRuntime().availableProcessors();
+        _executor = new ThreadPoolExecutor(_cores/2, _cores, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    }
 
-                    public void doInParallel(List<SootClass> sootClasses) {
-                        for(SootClass c : sootClasses)
-                            generate(c);
-                        _executor.shutdown();
-                        _executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                    }
+    public void doInParallel(List<SootClass> sootClasses) {
+        for(SootClass c : sootClasses)
+            generate(c);
+        _executor.shutdown();
+        _executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+    }
 
-                    void generate(SootClass _sootClass) {
-                        _classCounter++;
-                        _sootClasses.add(_sootClass);
-                        if ((_classCounter % _classSplit == 0) || (_classCounter + _classSplit-1 >= _totalClasses)) {
-                            Runnable runnable = _factory.newRunnable(_sootClasses);
-                            _executor.execute(runnable);
-                            _sootClasses = new ArrayList<>();
-                        }
-                    }
-                }
+    void generate(SootClass _sootClass) {
+        _classCounter++;
+        _sootClasses.add(_sootClass);
+        if ((_classCounter % _classSplit == 0) || (_classCounter + _classSplit-1 >= _totalClasses)) {
+            Runnable runnable = _factory.newRunnable(_sootClasses);
+            _executor.execute(runnable);
+            _sootClasses = new ArrayList<>();
+        }
+    }
+}
 
-                public class ThreadFactory {
-                    /* ... */
-                    public Runnable newRunnable(List<SootClass> sootClasses) {
-                        if (_makeClassGenerator)
-                            return new FactGenerator(_factWriter, _ssa, sootClasses);
-                        else
-                            return new FactPrinter(_ssa, _toStdout, _outputDir, _printWriter, sootClasses);
-                    }
-                }
-            \end{lstlisting}
+public class ThreadFactory {
+    /* ... */
+    public Runnable newRunnable(List<SootClass> sootClasses) {
+        if (_makeClassGenerator)
+            return new FactGenerator(_factWriter, _ssa, sootClasses);
+        else
+            return new FactPrinter(_ssa, _toStdout, _outputDir, _printWriter, sootClasses);
+    }
+}
+\end{lstlisting}
         \caption{Multiple Classes Per Thread}
         \end{figure}
 
@@ -590,26 +603,26 @@
     	\thesissubsubsection{CSVDatabase}
 	    	Lock file to prevent more than one thread to write at the same time. 
 	    	\begin{figure}[H]
-	            \begin{lstlisting}
-			    	synchronized(predicateFile) {
-		                Writer writer = getWriter(predicateFile);
-		                addColumn(writer, arg, shouldTruncate);
-		                for (Column col : args)
-		                    addColumn(writer.append(SEP), col, shouldTruncate);
-		                writer.write(EOL);
-	            	}
-				\end{lstlisting}
+\begin{lstlisting}
+synchronized(predicateFile) {
+    Writer writer = getWriter(predicateFile);
+    addColumn(writer, arg, shouldTruncate);
+    for (Column col : args)
+        addColumn(writer.append(SEP), col, shouldTruncate);
+    writer.write(EOL);
+}
+\end{lstlisting}
 	        \caption{CSVDatabase.java}
 	        \end{figure}
 
 	    \thesissubsubsection{Represantation}
 	    	The other synchronization we had to provide was in three methods that were accessing SootMethods while threads were active.
 	    	\begin{figure}[H]
-	            \begin{lstlisting}
-			    	public synchronized String signature(SootMethod) { /*...*/ }
-			    	public synchronized String handler(SootMethod, Trap, Session) { /*...*/ }
-			    	public synchronized String compactMethod(SootMethod) { /*...*/ }
-				\end{lstlisting}
+\begin{lstlisting}
+public synchronized String signature(SootMethod) { /*...*/ }
+public synchronized String handler(SootMethod, Trap, Session) { /*...*/ }
+public synchronized String compactMethod(SootMethod) { /*...*/ }
+\end{lstlisting}
 	        \caption{Represantation.java}
 	        \end{figure}
 
@@ -620,24 +633,24 @@
 	    \thesissubsubsection{Type Assigner}
 	    	The class \textit{JimpleBodyPack} applies the transformations corresponding to the given options. In our case, it applies a \textit{"jb.tr"} which means \textit{"jimple body transformation"}. From bytecode to jimple translation this is the only pack needed, so we lock before applying Type Assigner and unlock afterwards.
 	    	\begin{figure}[H]
-	            \begin{lstlisting}
-			    	lock.lock();
-					PackManager.v().getTransform("jb.tr").apply(b);
-					lock.unlock();
-				\end{lstlisting}
+\begin{lstlisting}
+lock.lock();
+PackManager.v().getTransform("jb.tr").apply(b);
+lock.unlock();
+\end{lstlisting}
 	        \caption{JimpleBodyPack.java}
 	        \end{figure}
 
 	    \thesissubsubsection{Pack Manager}
 	    	The class that manages the Packs containing the various phases and their options is \textit{PackManager}. Lock before retrieving Class Hierarchy Analysis, unlock afterwards.
 			\begin{figure}[H]
-	            \begin{lstlisting}
-					lock.lock();
-					p.add(new Transform("cg.cha", CHATransformer.v()));
-					p.add(new Transform("cg.spark", SparkTransformer.v()));
-					p.add(new Transform("cg.paddle", PaddleHook.v()));
-					lock.unlock();
-				\end{lstlisting}
+\begin{lstlisting}
+lock.lock();
+p.add(new Transform("cg.cha", CHATransformer.v()));
+p.add(new Transform("cg.spark", SparkTransformer.v()));
+p.add(new Transform("cg.paddle", PaddleHook.v()));
+lock.unlock();
+\end{lstlisting}
 	        \caption{PackManager.java}
 	        \end{figure}
 
