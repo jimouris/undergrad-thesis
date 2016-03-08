@@ -350,7 +350,7 @@ public class inheritanceTest extends java.lang.Object {
 
 
 \thesissection{Four Approaches}
-    We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). 
+    We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). Below is presented the \textit{FactGenerator.java} which implements the work described above and then calls Soot. 
     \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -382,7 +382,7 @@ public class FactGenerator {
     \caption{Sequential Fact Generation}
     \end{figure}
 
-    Having the previous basic structure in mind, and considering that \textit{m.retrieveActiveBody()} spends more than 80\% of total fact generation time, we tried to parallelize the method which calls \textit{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. The three of them are pretty much similar while the other one is based on a recursive Java Framework (Fork/Join Framework).
+    Having the previous basic structure in mind, and considering that \textit{m.retrieveActiveBody()} spends more than 80\% of total fact generation time, we tried to parallelize the method which calls \textit{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. The three of them are pretty much similar while the other one is based on a recursive Java Framework (Fork/Join Framework). Below are presented some Fact Generation time examples with the sequential FG.
     \begin{table}[H]
 		\centering
         \begin{tabular}{@{}ll@{}}
@@ -398,8 +398,9 @@ public class FactGenerator {
 		\caption{Sequential Fact Generation Time Examples}
 	\end{table}
 
+
     \thesissubsection{One Thread Per Method}
-        Our first approach to parallelize Fact Generation is similar as the sequential one, but instead of having a loop over all Soot Methods and call \textit{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, MethodGenerator, which is identical to FactGenerator and also has a \textit{run()} method to generate sootMethods. 
+        Our first approach to parallelize Fact Generation is similar as the sequential one, but instead of having a loop over all Soot Methods and call \textit{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, MethodGenerator, which is identical to FactGenerator and in addition has a \textit{run()} method to generate sootMethods. 
         \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -430,6 +431,7 @@ public class MethodGenerator {
         \caption{One Thread Per Method}
         \end{figure}
 
+        Below are presented some Fact Generation time examples with the \textit{One Thread Per Method FG} approach for various thread-pool sizes (such as 4, 16 and 32).
 		\begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
@@ -449,7 +451,7 @@ public class MethodGenerator {
 
 
     \thesissubsection{One Thread Per Class}
-        In our second approach, we tried to find out ways to gain more speedup. So, we observed that some threads did not have much work to do and finishing their task instantly. Allocating a new object and assigning to it a task just to finish instantly was an overhead. As a result, we tried to feed the threads more than just a method, we created a new thread for each class, not for each method.  
+        In our second approach, we tried to find out ways to gain more speedup. So, we observed that some threads did not have much work to do and finishing their task instantly. Allocating a new object and assigning to it a task just to finish instantly was an overhead. As a result, we tried to feed the threads more than just a method, so we created a new thread for each class not for each method.  
         \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -482,6 +484,7 @@ public class ClassGenerator {
         \caption{One Thread Per Class}
         \end{figure}
 
+        The results were slightly better than the previous but without achiving a remarkable speedup. Below are presented some Fact Generation time examples with the \textit{One Thread Per Class FG} approach for various thread-pool sizes (such as 4, 16 and 32).
         \begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
@@ -500,8 +503,8 @@ public class ClassGenerator {
 
 
     \thesissubsection{Fork-Join Framework}
-        From Oracle's Java Documentation: \\
-    	\textit{"The fork/join framework is an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.}
+        So in order to achive more speedup we tried a completely different approach than the two previous, a recursive Java FrameWork (Fork/Join framework). As Oracle describes in Java Documentation, Fork/Join Framework is
+    	\textit{"an implementation of the ExecutorService interface that helps you take advantage of multiple processors. It is designed for work that can be broken into smaller pieces recursively. The goal is to use all the available processing power to enhance the performance of your application.}
     	 
 		\textit{The center of the fork/join framework is the ForkJoinPool class, an extension of the \\ AbstractExecutorService class. ForkJoinPool implements the core work-stealing algorithm and can execute ForkJoinTask processes.}
     	 
@@ -543,7 +546,7 @@ public class ClassGenerator {
     public void compute() {
         List<SootMethod> sootMethods = _sootClass.getMethods();
         /* if (my portion of the work is small enough) */
-        if (_to - _from < threshold) {
+        if (_to - _from < threshold) {  /* How many classes can I process? */
             for (int i = _from ; i < _to ; i++) {
                 SootMethod m = sootMethods.get(i);
                 Session session = new Session();
@@ -562,17 +565,18 @@ public class ClassGenerator {
         \caption{Fork-Join Framework}
         \end{figure}
 
+        The results were worse than the two previous approaches (still better than then sequential approach). Below are presented some Fact Generation time examples with the \textit{Fork/Join Framework FG} approach for threshold values (such as 2, 3 and 4). Threshold actually is the number of classes for a thread to process.
 		\begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
             \toprule
             \textbf{Jars}    	& \multicolumn{3}{l}{\textbf{Time (sec.)}}  \\ \midrule
             \textbf{Threshold (classes to generate)} 	& \textbf{2}  & \textbf{3}  & \textbf{4}  \\ \midrule
-            antlr            	& 21          & 14           & 13           \\
-            eclipse          	& 13          & 7            & 8            \\
-            jython           	& 14          & 9            & 9            \\
-            hsqldb           	& 23          & 15           & 16           \\
-            batik            	& 26          & 23           & 18           \\ \bottomrule
+            antlr            	& 23          & 25           & 25           \\
+            eclipse          	& 13          & 15           & 18           \\
+            jython           	& 16          & 17           & 19           \\
+            hsqldb           	& 25          & 28           & 31           \\
+            batik            	& 34          & 37           & 38           \\ \bottomrule
             \end{tabular}
             \newline
 			\caption{Fork/Join Time Examples, with threshold 2, 3, 4 and pool size 16}
@@ -580,9 +584,7 @@ public class ClassGenerator {
 
 
     \thesissubsection{Multiple Classes Per Thread}
-        Our final approach is similar as the second one, but insted of having one thread per class, we now have one thread per multiple classes. Even in the second approach some threads did not have much work to do. Below is presented in an abstract way the final stage of the code implementing the \textit{Multiple Classes Per Thread} approach.
-
-        Getting away from the overhead produced by assignments and allocations of the first and second approach, this one had so far the best time results.
+        Our last and final approach is similar as the second one, but instead of having one thread per class, we now have one thread per multiple classes. Even in the second approach some threads did not have much work to do. Below is presented in an abstract way the final stage of the code implementing the \textit{Multiple Classes Per Thread} approach.
 
         \begin{figure}[H]
 \begin{lstlisting}
@@ -628,6 +630,7 @@ public class ThreadFactory {
         \caption{Multiple Classes Per Thread}
         \end{figure}
 
+        Getting away from the overhead produced by assignments and allocations of the first and second approach, this one had so far the best time results. Below are presented some Fact Generation time examples with the \textit{Multiple Classes Per Thread FG} approach for various thread-pool sizes (such as 4, 16 and 32) and various number of classes per thread.
 \begin{table}[H]
         \centering
         \begin{tabular}{@{}lc|lll@{}}
