@@ -118,7 +118,7 @@
 
 
 \begin{thesisprologue}[PROLOGUE]
-    Το παρόν έγγραφο δημιουργήθηκε στην Αθήνα, το 2016 
+    Το παρόν έγγραφο δημιουργήθηκε στην Αθήνα, τον Φεβρουάριο του 2016.
     
     blahblahblahblah
 
@@ -186,7 +186,7 @@ facts/ClassType.facts:helloWorld
     \cite{Sable: Soot}
     
     \thesissubsection{Applying the latest Soot version}
-    	To minimize the time consumed in fact generation phase, before we tried to parallelize it, we applied the latest (Sept. 2015) Soot version. We faced a lot of compatibility problems in order to use it properly but it gave a speed up of 40\%.
+    	To minimize the time consumed in fact generation phase, before we tried to parallelize it, we applied the latest (Sept. 2015) Soot version. We faced a lot of compatibility problems in order to use it properly but it gave a speed up of 40\%. Below are presented a few time examples with Soot-2.5.0 and the latest one.
 
 		\begin{figure}[H]
 			\centering
@@ -202,7 +202,7 @@ facts/ClassType.facts:helloWorld
 			\caption{Fact Generation with different Soot versions}
 		\end{figure}
 
-    	Then, to gain more speedup we tried to parallelize the fact generation part. In order to do that, we had to understand the way bytecode is translated to jimple. Below we explain in more detail this procedure. 
+    	Then, to gain more speedup we tried to parallelize the fact generation part, which spends a similar amount of a simple analysis time. In order to do that, we had to understand the way bytecode is translated to jimple. Below we explain in more detail this procedure. 
 
     \thesissubsection{Bytecode To Jimple}
         As we mentioned before, Soot is able to translate Java bytecode to a typed 3-address IR, Jimple. Jimple (\textbf{J}ava s\textbf{imple}) is a very convinient IR for performing optimizations, it only has 15 statements.
@@ -213,6 +213,7 @@ facts/ClassType.facts:helloWorld
         Soot is launched by specifying a directory with the Application code as a parameter. In this example only Java bytecode, either a class file or a jar. First, the \textit{main()} method of the Main class is executed and calls \textit{Scene.loadNecessaryClasses()} (In our case Doop calls it). This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. Then, the resolver having a reference to a class source, calls \textit{resolve()} on it. This methods in turn calls \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For example, if during an analysis with Soot the analysis code calls \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
 
     \thesissubsection{Compiling \& Running Soot}
+    	Soot uses ant \cite{Apache Ant} for compiling and building the project. So with minor modifications in the \textit{ant.settings} file, is very easy to compile and run Soot.
         \begin{figure}[H]
 \begin{lstlisting}
 ant             /* To compile */
@@ -221,6 +222,8 @@ ant fulljar     /* To generate the complete soot jar file */
 \end{lstlisting}
         \caption{Compiling Soot}
         \end{figure}
+
+        Running Soot and generating Jimple from java bytecode or from a jar file is presented below. (For Shimple IR, -ssa flag is needed). 
         \begin{figure}[H]
 \begin{lstlisting}
 (create a test.java)
@@ -229,9 +232,10 @@ java -cp ./lib/soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-a
 \end{lstlisting}
         \caption{Generating Jimple from .class}
         \end{figure}
+
         \begin{figure}[H]
 \begin{lstlisting}
-java -cp soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar -process-dir pathtotest.jar
+java -cp ./lib/soot-trunk.jar soot.Main -f J -cp .:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar -process-dir pathtotest.jar
 \end{lstlisting}
         \caption{Generating Jimple from .jar}
         \end{figure}
@@ -358,7 +362,7 @@ public class inheritanceTest extends java.lang.Object {
 
 
 
-\thesissection{Four Approaches}
+\thesissection{Parallelizing Fact Generation}
     We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). Below is presented the \textit{FactGenerator.java} which implements the work described above and then calls Soot. 
     \begin{figure}[H]
 \begin{lstlisting}
@@ -841,6 +845,10 @@ lock.unlock();
 		"Oracle Java Fork/Join Framework"
 		[Online]
 		Available: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html}
+	\bibitem{Apache Ant}
+		"Apache Ant"
+		[Online]
+		Available: \url{http://ant.apache.org/}
 \end{thesisbibliography}
 
 
