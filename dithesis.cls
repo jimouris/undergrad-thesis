@@ -143,7 +143,8 @@
 \newcommand{\school}{School of Science}
 \newcommand{\department}{Department of Informatics and Telecommunications}
 \newcommand{\thesislabel}{Thesis}
-\newcommand{\supervisorlabel}{Supervisors}
+\newcommand{\supervisorENlabel}{Supervisors}
+\newcommand{\supervisorGRlabel}{Επιβλέποντες}
 \newcommand{\idlabel}{A.M.}
 \newcommand{\thesisplace}{Athens}
 \newcommand{\thesisdate}{September 2011}
@@ -185,33 +186,67 @@
 % for multiple supervisors, just use the \supervisor command multiple times.
 % relative ordering is preserved.
 \makeatletter
-\newcommand{\supervisor}[2]{%
-  \ifthenelse{\isundefined{\thesupervisorslist}}{%
-    \def\thesupervisorslist{\textbf{#1,} #2}
+\newcommand{\supervisorEN}[2]{%
+  \ifthenelse{\isundefined{\thesupervisorsENlist}}{%
+    \def\thesupervisorsENlist{\textbf{#1,} #2}
   }%
   {%
-    \g@addto@macro\thesupervisorslist{\\&\textbf{#1,} #2}
+    \g@addto@macro\thesupervisorsENlist{\\&\textbf{#1,} #2}
   }
 }
 \makeatother
 
-\newcommand{\thesupervisorsattitlepage}{%
+\newcommand{\thesupervisorsENattitlepage}{%
   \begin{table*}[!h]
     \centering
     \begin{tabular}{l l}
-      \textbf{\supervisorlabel:} & \thesupervisorslist \\
+      \textbf{\supervisorENlabel:} & \thesupervisorsENlist \\
     \end{tabular}
   \end{table*}
 }
 
-\newcommand{\thesupervisorsatacceptancepage}{%
+\newcommand{\thesupervisorsENatacceptancepage}{%
   \begin{table*}[!h]
     \centering
     \begin{tabular}{l l}
-      \textbf{\MakeUppercase{\supervisorlabel:}} & \thesupervisorslist \\
+      \textbf{\MakeUppercase{\supervisorENlabel:}} & \thesupervisorsENlist \\
     \end{tabular}
   \end{table*}
 }
+
+
+
+\makeatletter
+\newcommand{\supervisorGR}[2]{%
+  \ifthenelse{\isundefined{\thesupervisorsGRlist}}{%
+    \def\thesupervisorsGRlist{\textbf{#1,} #2}
+  }%
+  {%
+    \g@addto@macro\thesupervisorsGRlist{\\&\textbf{#1,} #2}
+  }
+}
+\makeatother
+
+\newcommand{\thesupervisorsGRattitlepage}{%
+  \begin{table*}[!h]
+    \centering
+    \begin{tabular}{l l}
+      \textbf{\supervisorGRlabel:} & \thesupervisorsGRlist \\
+    \end{tabular}
+  \end{table*}
+}
+
+\newcommand{\thesupervisorsGRatacceptancepage}{%
+  \begin{table*}[!h]
+    \centering
+    \begin{tabular}{l l}
+      \textbf{\MakeUppercase{\supervisorGRlabel:}} & \thesupervisorsGRlist \\
+    \end{tabular}
+  \end{table*}
+}
+
+
+
 %%
 %% End of User Interface Commands
 %% ============================================================
@@ -548,7 +583,10 @@
     \begin{singlespace}
       \vspace*{1.49in}
 
-      {\fontsize{12pt}{14.4pt}\selectfont\thesupervisorsattitlepage}
+      {
+      \fontsize{12pt}{14.4pt}\selectfont\thesupervisorsENattitlepage
+      %\fontsize{12pt}{14.4pt}\selectfont\thesupervisorsGRattitlepage
+      }
     
       \vspace*{1.34in}
 
@@ -579,7 +617,10 @@
     {\fontsize{12pt}{14.4pt}\selectfont\theauthorsatacceptancepage}
 
     \vspace*{2.76in}
-    {\fontsize{12pt}{14.4pt}\selectfont\thesupervisorsatacceptancepage}
+    {
+    \fontsize{12pt}{14.4pt}\selectfont\thesupervisorsENatacceptancepage
+    %\fontsize{12pt}{14.4pt}\selectfont\thesupervisorsGRatacceptancepage
+    }
   \end{center}
 }
 
