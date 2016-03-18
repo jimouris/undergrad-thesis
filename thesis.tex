@@ -9,6 +9,7 @@
 \usepackage{booktabs}
 \usepackage{listings}
 \usepackage{caption}
+% \usepackage{subcaption}
 
 \setallmainfonts[Mapping=tex-text]{Arial}
 \setallsansfonts[Mapping=tex-text]{Arial}
@@ -36,7 +37,6 @@
 \setcounter{page}{3}
 \end{otherlanguage}
 
-
 \renewcommand{\university}{Εθνικό και Καποδιστριακό Πανεπιστήμιο Αθηνών}
 \renewcommand{\school}{Σχολή Θετικών Επιστημών}
 \renewcommand{\department}{Τμήμα Πληροφορικής και Τηλεπικοινωνιών}
@@ -47,7 +47,7 @@
 \renewcommand{\idlabel}{Α.Μ.}
 \begin{otherlanguage}{greek}
 \thesistitle{Doop-Soot: Παραλληλοποίηση της Δημιουργίας Γεγονότων}
-\thesisauthor{Δημήτρης Μούρης}{1115201200114}
+\thesisauthor{Δημήτρης Η. Μούρης}{1115201200114}
 \let\thesupervisorslist\undefined
 \supervisor{Γιάννης Σμαραγδάκης}{Αναπληρωτής Καθηγητής ΕΚΠΑ}
 \supervisor{Αναστάσης Αντωνιάδης}{Μεταπτυχιακός Φοιτητής ΕΚΠΑ}
@@ -55,7 +55,7 @@
 \end{otherlanguage}
 
 \thesistitle{Doop-Soot: Parallel Fact Generation}
-\thesisauthor{Mouris Dimitris}{1115201200114}
+\thesisauthor{Dimitris I. Mouris}{1115201200114}
 % \supervisorEN{Smaragdakis Yannis}{Associate Professor NKUA}
 % \supervisorEN{Antoniadis Anastasis}{M.Sc. Student NKUA}
 
@@ -131,9 +131,9 @@
     eisagwgh gia doop kai soot
 
 \thesissection{Doop}
-	From Doop Website: \\
-    \textit{"Doop is a framework for pointer, or points-to, analysis of Java programs. Doop implements a range of algorithms, including context insensitive, call-site sensitive, and object-sensitive analyses, all specified modularly as variations on a common code base."}
+    Doop is a framework for pointer, or points-to, analysis of Java programs. Doop implements a range of algorithms, including context insensitive, call-site sensitive, and object-sensitive analyses, all specified modularly as variations on a common code base.
 
+	From the Doop website: \\
     \textit{"Doop builds on the idea of specifying pointer analysis algorithms declaratively, using Datalog: a logic-based language for defining (recursive) relations. Doop carries the declarative approach further than past work by describing the full end-to-end analysis in Datalog and optimizing aggressively through exposition of the representation of relations (for example indexing) to the Datalog language level. Doop uses the Datalog dialect and engine of LogicBlox."}
 
     Compared to alternative context-sensitive pointer analysis implementations (such as Paddle) Doop is much faster, and scales better. Also, with comparable context-sensitivity features, Doop is more precise in handling some Java features (for example exceptions) than alternatives. //kati prepei na alla3ei edw..
@@ -141,7 +141,7 @@
     Doop is launched by specifying the type of analysis to run and the target directory that contains java bytecode (.jar file). First doop generates the facts and imports them into a database -or more precisely a knowlegdebase- and then it runs the analysis that was asked to. \cite{Doop: Framework for Java Pointer Analysis}
 
     \thesissubsection{Fact Generation}
-        Doop before running a pointer or points-to analysis, intergrates with Soot to generate either Jimple (\textbf{J}ava s\textbf{imple}) or Shimple (a \textbf{S}sa version of J\textbf{imple}) intermidiate representations. Jimple is a typed 3-address IR suitable for performing optimizations; it only has 15 statements. Then from jimple the facts are generated and imported into a database with multiple tables. Shimple is a SSA-version of jimple; obviously first jimple is generated and then Soot applies a transformation pack to jimple body to create shimple.
+        Doop before running a pointer or points-to analysis, intergrates with Soot to generate either Jimple (\textbf{J}ava s\textbf{imple}) or Shimple (a \textbf{S}sa version of J\textbf{imple}) intermidiate representations. Jimple is a typed 3-address IR suitable for performing optimizations; it only has 15 statements. Then from jimple the facts are generated and imported into a database with multiple tables. Shimple is an SSA-version of jimple; obviously first jimple is generated and then Soot applies a transformation pack to jimple body to create shimple.
 
         The main problem is that fact generation takes more than 50\% of total execution time (either jimple or shimple). Below are presented a few time examples of the sequential Doop Fact Generation and total execution time (both fact generation and analysis times).
 
@@ -162,16 +162,63 @@
     	Here are presented some of the facts that created for the \textit{helloWorld} example.
     	\begin{figure}[H]
 \begin{lstlisting}
-facts/ActualParam.facts:0	helloWorld.main/java.io.PrintStream.println/0	helloWorld.main/$stringconstant0
-facts/ApplicationClass.facts:helloWorld
-facts/AssignHeapAllocation.facts:helloWorld.main/invoke/instruction3	3	helloWorld	helloWorld.main/$stringconstant0	<helloWorld: void main(java.lang.String[])>
-facts/AssignLocal.facts:helloWorld.<init>/definition/instruction1	1	helloWorld.<init>/@this	helloWorld.<init>/r0	<helloWorld: void <init>()>
-facts/AssignLocal.facts:helloWorld.main/definition/instruction1	1	helloWorld.main/@param0	helloWorld.main/r0	<helloWorld: void main(java.lang.String[])>
-facts/ClassObject.facts:<class helloWorld>	java.lang.Class	helloWorld
-facts/ClassType.facts:helloWorld
+0   java.io.PrintStream.requireNonNull/java.lang.NullPointerException.<init>/0  java.io.PrintStream.requireNonNull/r1
+0   helloWorld.main/java.io.PrintStream.println/0   helloWorld.main/$stringconstant0
+0   java.io.PrintStream.toCharset/java.io.PrintStream.requireNonNull/0  java.io.PrintStream.toCharset/r0
+1   java.io.PrintStream.toCharset/java.io.PrintStream.requireNonNull/0  java.io.PrintStream.toCharset/$stringconstant0
 /* ... */
 \end{lstlisting}
-        \caption{Facts Example}
+\caption{ActualParam.facts}
+        \end{figure}
+
+
+
+        \begin{figure}[H]
+\begin{lstlisting}
+helloWorld.<init>/definition/instruction1   1   helloWorld.<init>/@this helloWorld.<init>/r0    <helloWorld: void <init>()>
+helloWorld.main/definition/instruction1 1   helloWorld.main/@param0 helloWorld.main/r0  <helloWorld: void main(java.lang.String[])>
+/* ... */
+\end{lstlisting}
+\caption{AssignLocal.facts}
+        \end{figure}
+
+        
+
+        \begin{figure}[H]
+\begin{lstlisting}
+<class helloWorld>      java.lang.Class helloWorld
+<class java.io.PrintStream>     java.lang.Class java.io.PrintStream
+<class java.lang.Object>        java.lang.Class java.lang.Object
+<class java.lang.String>        java.lang.Class java.lang.String
+<class java.lang.System>        java.lang.Class java.lang.System
+/* ... */
+\end{lstlisting}
+\caption{ClassObject.facts}
+        \end{figure}
+
+
+
+        \begin{figure}[H]
+\begin{lstlisting}
+java.io.PrintStream.requireNonNull/assign/instruction4  4   java.io.PrintStream.requireNonNull/new java.lang.NullPointerException/0 java.io.PrintStream.requireNonNull/$r2  <java.io.PrintStream: java.lang.Object requireNonNull(java.lang.Object,java.lang.String)>
+helloWorld.main/invoke/instruction3 3   helloWorld  helloWorld.main/$stringconstant0    <helloWorld: void main(java.lang.String[])>
+java.io.PrintStream.toCharset/invoke/instruction2   2   charsetName java.io.PrintStream.toCharset/$stringconstant0  <java.io.PrintStream: java.nio.charset.Charset toCharset(java.lang.String)>
+/* ... */
+\end{lstlisting}
+\caption{AssignHeapAllocation.facts}
+        \end{figure}
+
+
+
+        \begin{figure}[H]
+\begin{lstlisting}
+helloWorld
+java.lang.Class
+java.io.PrintStream
+java.lang.Class
+/* ... */
+\end{lstlisting}
+\caption{ClassType.facts}
         \end{figure}
 
 
