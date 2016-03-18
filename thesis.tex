@@ -1,19 +1,22 @@
 \documentclass{dithesis}
 
 \usepackage{mathspec}
-\usepackage{xgreek}
-\usepackage{xunicode}
-\usepackage{xcolor}
 \usepackage{pgfplots}
 \usepackage{tikz}
 \usepackage{booktabs}
 \usepackage{listings}
+\usepackage{xcolor}
 \usepackage{caption}
-% \usepackage{subcaption}
+\usepackage{fontenc}
+\usepackage{xgreek}
+\usepackage[english, greek]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{xunicode}
 
-\setallmainfonts[Mapping=tex-text]{Arial}
-\setallsansfonts[Mapping=tex-text]{Arial}
-\setallmonofonts[Mapping=tex-text]{Arial}
+\setmainfont{Times New Roman}
+% \setallmainfonts[Mapping=tex-text]{Arial}
+% \setallsansfonts[Mapping=tex-text]{Arial}
+% \setallmonofonts[Mapping=tex-text]{Arial}
 
 \renewcommand{\university}{National and Kapodistrian University of Athens}
 \renewcommand{\school}{School of Science}
@@ -24,11 +27,10 @@
 \renewcommand{\supervisorlabel}{Supervisors}
 \renewcommand{\idlabel}{R.N.}
 
-\usepackage[british, greek]{babel}
 
 \begin{document}
 
-\begin{otherlanguage}{british}
+\begin{otherlanguage}{english}
 \thesistitle{Doop-Soot: Parallel Fact Generation}
 \thesisauthor{Dimitris I. Mouris}{1115201200114}
 \supervisor{Yannis Smaragdakis}{Associate Professor NKUA}
@@ -37,6 +39,8 @@
 \setcounter{page}{3}
 \end{otherlanguage}
 
+
+\begin{otherlanguage}{greek}
 \renewcommand{\university}{Εθνικό και Καποδιστριακό Πανεπιστήμιο Αθηνών}
 \renewcommand{\school}{Σχολή Θετικών Επιστημών}
 \renewcommand{\department}{Τμήμα Πληροφορικής και Τηλεπικοινωνιών}
@@ -45,7 +49,6 @@
 \renewcommand{\thesislabel}{Πτυχιακή Εργασία}
 \renewcommand{\supervisorlabel}{Επιβλέποντες}
 \renewcommand{\idlabel}{Α.Μ.}
-\begin{otherlanguage}{greek}
 \thesistitle{Doop-Soot: Παραλληλοποίηση της Δημιουργίας Γεγονότων}
 \thesisauthor{Δημήτρης Η. Μούρης}{1115201200114}
 \let\thesupervisorslist\undefined
@@ -56,9 +59,8 @@
 
 \thesistitle{Doop-Soot: Parallel Fact Generation}
 \thesisauthor{Dimitris I. Mouris}{1115201200114}
-% \supervisorEN{Smaragdakis Yannis}{Associate Professor NKUA}
-% \supervisorEN{Antoniadis Anastasis}{M.Sc. Student NKUA}
 
+\begin{otherlanguage}{greek}
 \begin{thesisabstract}[ΠΕΡΙΛΗΨΗ]
     Παραλληλοποίηση του Fact Generation του Doop. Το Doop χρησιμοποιείται για μπλαμαπλπαλαμπλ
 
@@ -70,9 +72,10 @@
                                 {Τμήμα Πληροφορικής και Τηλεπικοινωνιών}
                                 {Πανεπιστήμιο Αθηνών}
 \end{thesisabstract}
+\end{otherlanguage}
 
 \begin{thesisabstract}[ABSTRACT]
-    Παραλληλοποίηση του Fact Generation του Doop. Το Doop χρησιμοποιείται για μπλαμαπλπαλαμπλ
+    Parallelizing doop fact generation blablahvblah
 
     \thesiskeywords{Subject Area}{Documentation}
                 {Keywords}{Static Program Analysis}
@@ -159,7 +162,7 @@
         \end{table}
 
     \thesissubsection{Fact Table Example}
-    	Here are presented some of the facts that created for the \textit{helloWorld} example.
+    	Here are presented some of the facts that created for the \texttt{helloWorld} example.
     	\begin{figure}[H]
 \begin{lstlisting}
 0   java.io.PrintStream.requireNonNull/java.lang.NullPointerException.<init>/0  java.io.PrintStream.requireNonNull/r1
@@ -259,15 +262,15 @@ java.lang.Class
         Soot has various phases and a lot of different options for transformations given. The one that is responsible for bytecode to jimple translation is jb phase. In this phase, first Soot translates bytecode to untyped Jimple and introduces new local variables; Jimple is stackless, Soot is using variables for stack locations. Then it inferres Types to the untyped jimple. The next step is to linearize all the expressions to statements that only reference at most 3 local variables or constants.
 
         Getting a little deeper, in a general case the way Soot handles Java bytecode classes is the following: \\
-        Soot is launched by specifying a directory with the Application code as a parameter. In this example only Java bytecode, either a class file or a jar. First, the \textit{main()} method of the Main class is executed and calls \textit{Scene.loadNecessaryClasses()} (In our case Doop calls it). This method loads basic Java classes and then loads specific Application classes by calling \textit{loadClass()}. Then, \textit{SootResolver.resolveClass()} is called. The resolver calls \textit{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. Then, the resolver having a reference to a class source, calls \textit{resolve()} on it. This methods in turn calls \textit{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For example, if during an analysis with Soot the analysis code calls \textit{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \textit{getActiveBody()} will call \textit{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
+        Soot is launched by specifying a directory with the Application code as a parameter. In this example only Java bytecode, either a class file or a jar. First, the \texttt{main()} method of the Main class is executed and calls \texttt{Scene.loadNecessaryClasses()} (In our case Doop calls it). This method loads basic Java classes and then loads specific Application classes by calling \texttt{loadClass()}. Then, \texttt{SootResolver.resolveClass()} is called. The resolver calls \texttt{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. Then, the resolver having a reference to a class source, calls \texttt{resolve()} on it. This methods in turn calls \texttt{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For example, if during an analysis with Soot the analysis code calls \texttt{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \texttt{getActiveBody()} will call \texttt{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
 
     \thesissubsection{Compiling \& Running Soot}
-    	Soot uses ant \cite{Apache Ant} for compiling and building the project. So with minor modifications in the \textit{ant.settings} file, is very easy to compile and run Soot.
+    	Soot uses ant \cite{Apache Ant} for compiling and building the project. So with minor modifications in the \texttt{ant.settings} file, is very easy to compile and run Soot.
         \begin{figure}[H]
 \begin{lstlisting}
-ant             /* To compile */
-ant classesjar  /* To generate the sootclasses jar file */
-ant fulljar     /* To generate the complete soot jar file */
+ant                 /* To compile */
+ant classesjar      /* To generate the sootclasses jar file */
+ant fulljar         /* To generate the complete soot jar file */
 \end{lstlisting}
         \caption{Compiling Soot}
         \end{figure}
@@ -412,7 +415,7 @@ public class inheritanceTest extends java.lang.Object {
 
 
 \thesissection{Parallelizing Fact Generation}
-    We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). Below is presented the \textit{FactGenerator.java} which implements the work described above and then calls Soot.
+    We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). Below is presented the \texttt{FactGenerator.java} which implements the work described above and then calls Soot.
     \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -444,7 +447,7 @@ public class FactGenerator {
     \caption{Sequential Fact Generation}
     \end{figure}
 
-    Having the previous basic structure in mind, and considering that \textit{m.retrieveActiveBody()} spends more than 80\% of total fact generation time, we tried to parallelize the method which calls \textit{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. The three of them are pretty much similar while the other one is based on a recursive Java Framework (Fork/Join Framework). Below are presented some Fact Generation time examples with the sequential FG.
+    Having the previous basic structure in mind, and considering that \texttt{m.retrieveActiveBody()} spends more than 80\% of total fact generation time, we tried to parallelize the method which calls \texttt{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. The three of them are pretty much similar while the other one is based on a recursive Java Framework (Fork/Join Framework). Below are presented some Fact Generation time examples with the sequential FG.
     \begin{table}[H]
 		\centering
         \begin{tabular}{@{}ll@{}}
@@ -462,7 +465,7 @@ public class FactGenerator {
 
 
     \thesissubsection{One Thread Per Method}
-        Our first approach to parallelize Fact Generation is similar as the sequential one, but instead of having a loop over all Soot Methods and call \textit{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, MethodGenerator, which is identical to FactGenerator and in addition has a \textit{run()} method to generate sootMethods.
+        Our first approach to parallelize Fact Generation is similar as the sequential one, but instead of having a loop over all Soot Methods and call \texttt{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, MethodGenerator, which is identical to FactGenerator and in addition has a \texttt{run()} method to generate sootMethods.
         \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -493,7 +496,7 @@ public class MethodGenerator {
         \caption{One Thread Per Method}
         \end{figure}
 
-        Below are presented some Fact Generation time examples with the \textit{One Thread Per Method FG} approach for various thread-pool sizes (such as 4, 16 and 32).
+        Below are presented some Fact Generation time examples with the \texttt{One Thread Per Method FG} approach for various thread-pool sizes (such as 4, 16 and 32).
 		\begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
@@ -546,7 +549,7 @@ public class ClassGenerator {
         \caption{One Thread Per Class}
         \end{figure}
 
-        The results were slightly better than the previous but without achiving a remarkable speedup. Below are presented some Fact Generation time examples with the \textit{One Thread Per Class FG} approach for various thread-pool sizes (such as 4, 16 and 32).
+        The results were slightly better than the previous but without achiving a remarkable speedup. Below are presented some Fact Generation time examples with the \texttt{One Thread Per Class FG} approach for various thread-pool sizes (such as 4, 16 and 32).
         \begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
@@ -782,10 +785,10 @@ public synchronized String compactMethod(SootMethod) { /*...*/ }
 
 
     \thesissubsection{Soot Side}
-	    The way Soot is implemented, it has a class that encloses all global objects (\textit{G.java}). As we mentioned before, Soot does much more than just translating bytecode to jimple, so it has various phases and a lot of different options for transformations given. The phase that translates bytecode to jimple is jb phase.
+	    The way Soot is implemented, it has a class that encloses all global objects (\texttt{G.java}). As we mentioned before, Soot does much more than just translating bytecode to jimple, so it has various phases and a lot of different options for transformations given. The phase that translates bytecode to jimple is jb phase.
 
 	    \thesissubsubsection{Type Assigner}
-	    	The class \textit{JimpleBodyPack} applies the transformations corresponding to the given options. In our case, it applies a \textit{"jb.tr"} which means \textit{"jimple body transformation"}. From bytecode to jimple translation this is the only pack needed, so we lock before applying Type Assigner and unlock afterwards.
+	    	The class \texttt{JimpleBodyPack} applies the transformations corresponding to the given options. In our case, it applies a \texttt{"jb.tr"} which means \textit{"jimple body transformation"}. From bytecode to jimple translation this is the only pack needed, so we lock before applying Type Assigner and unlock afterwards.
 	    	\begin{figure}[H]
 \begin{lstlisting}
 lock.lock();
@@ -796,7 +799,7 @@ lock.unlock();
 	        \end{figure}
 
 	    \thesissubsubsection{Pack Manager}
-	    	The class that manages the Packs containing the various phases and their options is \textit{PackManager}. Lock before retrieving Class Hierarchy Analysis, unlock afterwards.
+	    	The class that manages the Packs containing the various phases and their options is \texttt{PackManager}. Lock before retrieving Class Hierarchy Analysis, unlock afterwards.
 			\begin{figure}[H]
 \begin{lstlisting}
 lock.lock();
@@ -811,7 +814,7 @@ lock.unlock();
 	    \thesissubsubsection{Shimple -ssa}
 	    	We also use Soot to provide \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. Shimple generation is very similar to jimple but with a few differences.
 	    	blahblabh prepei na to dw kiallo auto
-	    	The class that handles the translation from jimple to shimple is \textit{Shimple.java}. So far we have synchronized all Shimple-Body-creation methods.
+	    	The class that handles the translation from jimple to shimple is \texttt{Shimple.java}. So far we have synchronized all Shimple-Body-creation methods.
 
 
 \thesissection{Time Results}
