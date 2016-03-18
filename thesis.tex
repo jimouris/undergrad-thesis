@@ -649,50 +649,55 @@ public class ClassGenerator {
 
 
     \thesissubsection{Multiple Classes Per Thread}
-        Our last and final approach is similar as the second one, but instead of having one thread per class, we now have one thread per multiple classes. Even in the second approach some threads did not have much work to do. Below is presented in an abstract way the final stage of the code implementing the \textit{Multiple Classes Per Thread} approach.
+        Our last approach is similar as the second one, but instead of having one thread per class, we now have one thread per multiple classes. Even in the second approach some threads did not have much work to do. Below is presented in an abstract way the final stage of the code implementing the \textit{Multiple Classes Per Thread} approach.
 
         \begin{figure}[H]
 \begin{lstlisting}
-public class Driver {
-    public Driver(ThreadFactory factory, boolean ssa, int totalClasses) {
-        _factory = factory;
+public class FactGenerator {
+    public FactGenerator(FactWriter writer, boolean ssa, int totalClasses) {
+        _writer = writer;
         _ssa = ssa;
         _classCounter = 0;
-        _sootClasses = new ArrayList<>();
+        _sootClassArray = new ArrayList<>();
         _totalClasses = totalClasses;
         _cores = Runtime.getRuntime().availableProcessors();
         _executor = new ThreadPoolExecutor(_cores/2, _cores, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
     }
 
-    public void doInParallel(List<SootClass> sootClasses) {
-        for(SootClass c : sootClasses)
-            generate(c);
-        _executor.shutdown();
-        _executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-    }
-
-    void generate(SootClass _sootClass) {
+    public void generate(sootClass) {
         _classCounter++;
         _sootClasses.add(_sootClass);
         if ((_classCounter % _classSplit == 0) || (_classCounter + _classSplit-1 >= _totalClasses)) {
-            Runnable runnable = _factory.newRunnable(_sootClasses);
-            _executor.execute(runnable);
-            _sootClasses = new ArrayList<>();
+            Runnable classGenerator = new ClassGenerator(_writer, _ssa, _sootClassArray);
+            _classGeneratorExecutor.execute(classGenerator);
+            _sootClassArray = new ArrayList<>();
         }
     }
 }
+\end{lstlisting}
+        \caption{Multiple Classes Per Thread: FactGenerator.java}
+        \end{figure}
 
-public class ThreadFactory {
-    /* ... */
-    public Runnable newRunnable(List<SootClass> sootClasses) {
-        if (_makeClassGenerator)
-            return new FactGenerator(_factWriter, _ssa, sootClasses);
-        else
-            return new FactPrinter(_ssa, _toStdout, _outputDir, _printWriter, sootClasses);
+        \begin{figure}[H]
+\begin{lstlisting}
+public class ClassGenerator {
+    public void run() {
+        if(c.hasSuperclass() && !c.isInterface())
+            _writer.writeDirectSuperclass(c, c.getSuperclass());
+        for(SootField f : c.getFields())
+            generate(f);
+        for(SootMethod m : c.getMethods()) {
+            Session session = new Session();
+            Runnable mg = new MethodGenerator();
+            MgExecutor.execute(mg);
+            generate(m, session);
+        }
     }
+
+    /* ... */
 }
 \end{lstlisting}
-        \caption{Multiple Classes Per Thread}
+        \caption{Multiple Classes Per Thread: ClassGenerator.java}
         \end{figure}
 
         Getting away from the overhead produced by assignments and allocations of the first and second approach, this one had so far the best time results. Below are presented some Fact Generation time examples with the \textit{Multiple Classes Per Thread FG} approach for various thread-pool sizes (such as 4, 16 and 32) and various number of classes per thread.
@@ -747,6 +752,66 @@ public class ThreadFactory {
             \end{tikzpicture}
             \caption{Increasing the number of threads with 4 classes per thread}
         \end{figure}
+
+
+        Based on the \texttt{Multiple Classes per thread} approach, our final version is presented below:  
+                \begin{figure}[H]
+\begin{lstlisting}
+public class Driver {
+    public Driver(ThreadFactory factory, boolean ssa, int totalClasses) {
+        _factory = factory;
+        _ssa = ssa;
+        _classCounter = 0;
+        _sootClasses = new ArrayList<>();
+        _totalClasses = totalClasses;
+        _cores = Runtime.getRuntime().availableProcessors();
+        _executor = new ThreadPoolExecutor(_cores/2, _cores, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+    }
+
+    public void doInParallel(List<SootClass> sootClasses) {
+        for(SootClass c : sootClasses)
+            generate(c);
+        _executor.shutdown();
+        _executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+    }
+
+    void generate(SootClass _sootClass) {
+        _classCounter++;
+        _sootClasses.add(_sootClass);
+        if ((_classCounter % _classSplit == 0) || (_classCounter + _classSplit-1 >= _totalClasses)) {
+            Runnable runnable = _factory.newRunnable(_sootClasses);
+            _executor.execute(runnable);
+            _sootClasses = new ArrayList<>();
+        }
+    }
+}
+\end{lstlisting}
+        \caption{Final approach: Driver.java}
+        \end{figure}
+
+        \begin{figure}[H]
+\begin{lstlisting}
+public class ThreadFactory {
+    public Runnable newRunnable(List<SootClass> sootClasses) {
+        if (_makeClassGenerator)
+            return new FactGenerator(_factWriter, _ssa, sootClasses);
+        else
+            return new FactPrinter(_ssa, _toStdout, _outputDir, _printWriter, sootClasses);
+    }
+}
+
+public class FactGenerator implements Runnable {
+    public void run() {
+        for (SootClass _sootClass : _sootClasses) {
+            /* for all soot classes generate like the sequential FactGenerator */
+            /* ... */
+        }
+    }
+}
+\end{lstlisting}
+        \caption{Final approach: ThreadFactory.java, FactGenerator.java}
+        \end{figure}
+kai isws kapoia akoma logia edw gia na e3hghsw 
 
 
 \thesissection{Locking}
@@ -893,14 +958,14 @@ lock.unlock();
 		"Sable: Soot"
 		[Online]
 		Available: \url{https://sable.github.io/soot/}
-	\bibitem{Oracle Java Fork/Join Framework}
-		"Oracle Java Fork/Join Framework"
-		[Online]
-		Available: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html}
 	\bibitem{Apache Ant}
 		"Apache Ant"
 		[Online]
 		Available: \url{http://ant.apache.org/}
+    \bibitem{Oracle Java Fork/Join Framework}
+        "Oracle Java Fork/Join Framework"
+        [Online]
+        Available: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html}
 \end{thesisbibliography}
 
 
