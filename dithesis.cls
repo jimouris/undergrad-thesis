@@ -6,13 +6,13 @@
 %%
 %% LICENSE:
 %%
-%% This work may be distributed and/or modified under the conditions of the 
+%% This work may be distributed and/or modified under the conditions of the
 %% LaTeX Project Public License, either version 1.3 of this license or (at
-%% your option) any later version. 
+%% your option) any later version.
 %%
 %% The latest version of this license is in:
 %% http://www.latex-project.org/lppl.txt
-%% and version 1.3 or later is part of all distributions of LaTeX version 
+%% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %%
 %% This work has the LPPL maintenance status "maintained".
@@ -20,20 +20,20 @@
 %%
 %% This work consists of the source file dithesis.cls and the documentation
 %% files sample.tex, samplewArial.tex, sample.pdf and samplewArial.pdf.
-%% To ensure proper compilation, however, the logo of the University of Athens 
+%% To ensure proper compilation, however, the logo of the University of Athens
 %% is also distributed alongside this work, under the filename athena.jpg.
 %%
 %% NOTES and WARRANTY:
 %%
 %% This work conforms to the requirements of the Department of Informatics and
-%% Telecommunications at the University of Athens regarding the preparation of 
+%% Telecommunications at the University of Athens regarding the preparation of
 %% undergraduate theses, as of Sep 1, 2011.
 %%
 %% This work is distributed in the hope that it will be useful, but WITHOUT ANY
-%% WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+%% WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 %% FOR A PARTICULAR PURPOSE.
 %% The entire risk as to the quality and performance of this work is with you.
-%% Should this work prove defective, you assume the cost of all necessary 
+%% Should this work prove defective, you assume the cost of all necessary
 %% servicing, repair, or correction.
 %% See the LaTeX Project Public License for more details.
 %%
@@ -143,13 +143,12 @@
 \newcommand{\school}{School of Science}
 \newcommand{\department}{Department of Informatics and Telecommunications}
 \newcommand{\thesislabel}{Thesis}
-\newcommand{\supervisorENlabel}{Supervisors}
-\newcommand{\supervisorGRlabel}{Επιβλέποντες}
+\newcommand{\supervisorlabel}{Supervisors}
 \newcommand{\idlabel}{A.M.}
 \newcommand{\thesisplace}{Athens}
 \newcommand{\thesisdate}{September 2011}
 
-% \thesisauthor{Name}{ID}: set the author of the thesis; their name is Name and 
+% \thesisauthor{Name}{ID}: set the author of the thesis; their name is Name and
 %                          their departmental identification number is ID.
 % for multiple authors, just use the \thesisauthor command multiple times.
 % relative ordering is preserved.
@@ -186,64 +185,35 @@
 % for multiple supervisors, just use the \supervisor command multiple times.
 % relative ordering is preserved.
 \makeatletter
-\newcommand{\supervisorEN}[2]{%
-  \ifthenelse{\isundefined{\thesupervisorsENlist}}{%
-    \def\thesupervisorsENlist{\textbf{#1,} #2}
+\newcommand{\supervisor}[2]{%
+  \ifthenelse{\isundefined{\thesupervisorslist}}{%
+    \def\thesupervisorslist{\textbf{#1,} #2}
   }%
   {%
-    \g@addto@macro\thesupervisorsENlist{\\&\textbf{#1,} #2}
+    \g@addto@macro\thesupervisorslist{\\&\textbf{#1,} #2}
   }
 }
 \makeatother
 
-\newcommand{\thesupervisorsENattitlepage}{%
+\newcommand{\thesupervisorsattitlepage}{%
   \begin{table*}[!h]
     \centering
     \begin{tabular}{l l}
-      \textbf{\supervisorENlabel:} & \thesupervisorsENlist \\
+      \textbf{\supervisorlabel:} & \thesupervisorslist \\
     \end{tabular}
   \end{table*}
 }
 
-\newcommand{\thesupervisorsENatacceptancepage}{%
+\newcommand{\thesupervisorsatacceptancepage}{%
   \begin{table*}[!h]
     \centering
     \begin{tabular}{l l}
-      \textbf{\MakeUppercase{\supervisorENlabel:}} & \thesupervisorsENlist \\
+      \textbf{\MakeUppercase{\supervisorlabel:}} & \thesupervisorslist \\
     \end{tabular}
   \end{table*}
 }
 
 
-
-\makeatletter
-\newcommand{\supervisorGR}[2]{%
-  \ifthenelse{\isundefined{\thesupervisorsGRlist}}{%
-    \def\thesupervisorsGRlist{\textbf{#1,} #2}
-  }%
-  {%
-    \g@addto@macro\thesupervisorsGRlist{\\&\textbf{#1,} #2}
-  }
-}
-\makeatother
-
-\newcommand{\thesupervisorsGRattitlepage}{%
-  \begin{table*}[!h]
-    \centering
-    \begin{tabular}{l l}
-      \textbf{\supervisorGRlabel:} & \thesupervisorsGRlist \\
-    \end{tabular}
-  \end{table*}
-}
-
-\newcommand{\thesupervisorsGRatacceptancepage}{%
-  \begin{table*}[!h]
-    \centering
-    \begin{tabular}{l l}
-      \textbf{\MakeUppercase{\supervisorGRlabel:}} & \thesupervisorsGRlist \\
-    \end{tabular}
-  \end{table*}
-}
 
 
 
@@ -344,7 +314,7 @@
 %%
 \RequirePackage[%
   a4paper,
-  top=2cm,   bottom=2cm,     left=2cm,    right=2cm, bindingoffset=0.5cm, 
+  top=2cm,   bottom=2cm,     left=2cm,    right=2cm, bindingoffset=0.5cm,
   head=14pt, headsep=0.50cm, foot=0.75cm]{geometry}
 %%
 %% End of Margins of Text Pages
@@ -375,7 +345,7 @@
          \list{\@biblabel{\@arabic\c@enumiv}}%
            {\settowidth\labelwidth{\@biblabel{#1}}%
             \leftmargin\labelwidth
-            \advance\leftmargin\labelsep 
+            \advance\leftmargin\labelsep
             \itemsep\z@skip
             \parsep\z@skip
             \@openbib@code
@@ -398,7 +368,7 @@
 %%
 \RequirePackage{fancyhdr}
 
-% each page should have a left header with the thesis title at 8 pt, a left 
+% each page should have a left header with the thesis title at 8 pt, a left
 % footer with the names of authors at 8 pt, and a right footer with the current
 % page number at 10 pt.
 \pagestyle{fancy}
@@ -418,7 +388,7 @@
 %%
 \RequirePackage{titlesec}
 
-% sections should be boldfaced, uppercase and centered, at 14pt, with no 
+% sections should be boldfaced, uppercase and centered, at 14pt, with no
 % further spacing near them.
 \titleformat{\section}[block]
             {\fontsize{14pt}{16.8pt}\selectfont\centering\bfseries}
@@ -545,7 +515,7 @@
         \MakeUppercase{\university}}
 
       \vspace*{0.08in}
-    
+
       {\fontsize{12pt}{14.4pt}\selectfont\bfseries
         \MakeUppercase{\school}} \\
       {\fontsize{12pt}{14.4pt}\selectfont\bfseries
@@ -584,10 +554,10 @@
       \vspace*{1.49in}
 
       {
-      \fontsize{12pt}{14.4pt}\selectfont\thesupervisorsENattitlepage
+      \fontsize{12pt}{14.4pt}\selectfont\thesupervisorsattitlepage
       %\fontsize{12pt}{14.4pt}\selectfont\thesupervisorsGRattitlepage
       }
-    
+
       \vspace*{1.34in}
 
       {\fontsize{12pt}{14.4pt}\selectfont\bfseries\MakeUppercase{\thesisplace}}
@@ -618,7 +588,7 @@
 
     \vspace*{2.76in}
     {
-    \fontsize{12pt}{14.4pt}\selectfont\thesupervisorsENatacceptancepage
+    \fontsize{12pt}{14.4pt}\selectfont\thesupervisorsatacceptancepage
     %\fontsize{12pt}{14.4pt}\selectfont\thesupervisorsGRatacceptancepage
     }
   \end{center}
@@ -626,7 +596,7 @@
 
 \let\oldmaketitle\maketitle
 \renewcommand{\maketitle}{\oldmaketitle\setcounter{page}{3}}
+\newcommand{\maketitlesecond}{\maketitle\setcounter{page}{5}}
 %%
 %% End of Format of the Title and Acceptance Pages
 %% ============================================================
-
