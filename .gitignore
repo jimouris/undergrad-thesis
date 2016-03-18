@@ -172,3 +172,8 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~*
+
+
+#temporarly
+*.pdf
+
