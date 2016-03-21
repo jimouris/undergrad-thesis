@@ -62,7 +62,7 @@
 
 \begin{otherlanguage}{greek}
 \begin{thesisabstract}[ΠΕΡΙΛΗΨΗ]
-    Παραλληλοποίηση του Fact Generation του Doop. Το Doop χρησιμοποιείται για μπλαμαπλπαλαμπλ
+    Παραλληλοποίηση του Fact Generation του Doop. Το Doop χρησιμοποιείται για μπλαμαπλπαλαμπλ anastasi grapse kati edw
 
     \thesiskeywords{Θεματική Περιοχή}{Τεκμηρίωση}
                 {Λέξεις Κλειδιά}{Static Program Analysis}
@@ -87,15 +87,12 @@
 \end{thesisabstract}
 
 \begin{thesisdedication}
-Αφιέρωση σε κάποιους.
+to someone.
 \end{thesisdedication}
 
 \begin{thesisacknowledgments}[ACKNOWLEDGEMENTS]
-    blahblahblahblah
-
-    blahblahblahblah
-
-    blahblahblahblah
+    I would like to thank my supervisor, Prof. Yannis Smaragdakis for the chance he gave me and his support all these months.
+    My sincere thanks also goes to my friend and M.Sc. candidate Anastasis Antoniadis for his patience and guidance which had been very usefull to finish this work.
 \end{thesisacknowledgments}
 
 \renewcommand*\contentsname{Contents}
@@ -122,16 +119,12 @@
 }
 
 
-\begin{thesisprologue}[PROLOGUE]
-    Το παρόν έγγραφο δημιουργήθηκε στην Αθήνα, τον Φεβρουάριο του 2016.
-
-    blahblahblahblah
-
-    blahblahblahblah
+\begin{thesisprologue}[PREFACE]
+    This thesis aims to evaluate the Datomic database system for the purpose of pointer analysis. It was developed in Athens, Greece between September 2015 and March 2016. In the very beginning of this work, I had to understand how the Doop framework works for pointer or points-to analysis. I also had to get used to Soot framework, which intergrates with Doop to translate Java bytecode to an IR (Jimple) and produce the facts for the analysis. After all these, I tried to understand the way Java bytecode to Jimple translation is implemented and tried to parallelize it. 
 \end{thesisprologue}
 
 \thesissection{Introduction}
-    eisagwgh gia doop kai soot
+    Soot is a Java bytecode optimization framework which my colleagues use for fact generation in order to perform points-to analysis of Java programs, in Datalog. For this task, I had to parallelize the fact generation process and proceed to the appropriate modifications in Soot. blahblahblah anastasi grapse edw kati :P
 
 \thesissection{Doop}
     Doop is a framework for pointer, or points-to, analysis of Java programs. Doop implements a range of algorithms, including context insensitive, call-site sensitive, and object-sensitive analyses, all specified modularly as variations on a common code base.
