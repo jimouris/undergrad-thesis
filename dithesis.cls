@@ -486,7 +486,7 @@
 % explicitly enforce 12pt fonts
 \renewcommand{\cfttabfont}{\fontsize{12pt}{14.4pt}\selectfont}
 % and make the spacing the same as with sections
-\setlength\cftbeforefigskip\cftbeforesecskip
+\setlength\cftbeforetabskip\cftbeforesecskip
 %%
 %% End of Format of Table of Contents, List of Figures and List of Tables.
 %% ============================================================
