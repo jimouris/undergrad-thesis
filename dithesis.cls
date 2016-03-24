@@ -276,7 +276,7 @@
                  \addcontentsline{toc}{section}%
                                  {\texorpdfstring{\MakeUppercase{#1}}{#1}}
                  \begin{thebibliography}{#2}
-                   \fontsize{10pt}{12pt}\selectfont}
+                   \fontsize{12pt}{14.4pt}\selectfont}
                { \end{thebibliography}}
 %%
 %% End of User Interface Environments
@@ -391,21 +391,21 @@
 % sections should be boldfaced, uppercase and centered, at 14pt, with no
 % further spacing near them.
 \titleformat{\section}[block]
-            {\fontsize{14pt}{16.8pt}\selectfont\centering\bfseries}
+            {\fontsize{15pt}{17pt}\selectfont\centering\bfseries}
             {\thesection . }{0pt}{\MakeUppercase}
-\titlespacing{\section}{0pt}{0pt}{0pt}
+\titlespacing{\section}{0pt}{0pt}{10pt}
 % subsections should be boldfaced and justified at left, at 12pt, with
 % 12pt vertical spacing before them.
 \titleformat{\subsection}[block]
-            {\fontsize{12pt}{14.4pt}\selectfont\raggedright\bfseries}
+            {\fontsize{14pt}{15pt}\selectfont\raggedright\bfseries}
             {\thesubsection\quad}{0pt}{}
-\titlespacing{\subsection}{0pt}{12pt}{0pt}
+\titlespacing{\subsection}{0pt}{24pt}{1pt}
 % subsubsections should be boldfaced and justified at left, at 12pt, with
 % 12pt vertical spacing before them.
 \titleformat{\subsubsection}[block]
             {\fontsize{12pt}{14.4pt}\selectfont\raggedright\bfseries}
             {\thesubsubsection\quad}{0pt}{}
-\titlespacing{\subsubsection}{0pt}{12pt}{0pt}
+\titlespacing{\subsubsection}{0pt}{15pt}{0pt}
 %%
 %% End of Format of Titles for Thesis Sections, Subsections and Subsubsections.
 %% ============================================================

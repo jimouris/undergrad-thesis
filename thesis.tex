@@ -90,9 +90,10 @@
 to someone.
 \end{thesisdedication}
 
-\begin{thesisacknowledgments}[ACKNOWLEDGEMENTS]
-    I would like to thank my supervisor, Prof. Yannis Smaragdakis for the chance he gave me and his support all these months.
-    My sincere thanks also goes to my friend and M.Sc. candidate Anastasis Antoniadis for his patience and guidance which had been very usefull to finish this work.
+\begin{thesisacknowledgments}[Acknowledgements]
+    I would like to thank my supervisor, Prof. Yannis Smaragdakis for the chance he gave me with this project and also for his support and help all these months.
+    \\
+    My sincere thanks also goes to M.Sc. candidate and my friend Anastasis Antoniadis for his patience and guidance which had been very usefull to finish this work.
 \end{thesisacknowledgments}
 
 \renewcommand\contentsname{Contents}
@@ -103,8 +104,11 @@ to someone.
 \renewcommand{\tablename}{Table}
 \renewcommand{\cfttabpresnum}{Table }
 
+
 \tableofcontents
+% \addcontentsline{toc}{section}{LIST OF FIGURES}
 \listoffigures
+% \addcontentsline{toc}{section}{LIST OF TABLES}
 \listoftables
 
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -121,7 +125,7 @@ to someone.
 }
 
 
-\begin{thesisprologue}[PREFACE]
+\begin{thesisprologue}[Preface]
     This project was developed in Athens, Greece between September 2015 and March 2016. In the very beginning of this work, I had to understand how the Doop framework works for pointer or points-to analysis. I also had to get used to Soot framework, which intergrates with Doop to translate Java bytecode to an IR (Jimple) and produce the facts for the analysis. After all these, I tried to understand the way Java bytecode to Jimple translation is implemented and tried to parallelize it. 
 \end{thesisprologue}
 
@@ -806,19 +810,23 @@ public class FactGenerator implements Runnable {
 \end{lstlisting}
         \caption{Final approach: ThreadFactory.java, FactGenerator.java}
         \end{figure}
-kai isws kapoia akoma logia edw gia na e3hghsw 
+kai isws kapoia akoma logia edw gia na e3hghsw blah
+blah
+blah
 
 
 \thesissection{Locking}
-	Along with threads come locks. An incorrect use of locking could have very negative(??) effects on the results. Having more locks than we actually needed would had lead to a time result as slow as the sequential one. Having less, would had lead to races and deadlocks. So, locks should be used very consciously.
+	Along with threads come locks. An incorrect use of locking could have very negative effects on the results. Having more locks than we actually needed would had lead to a time result as slow as the sequential one. Having less, would had lead to races and deadlocks. So, locks should be used very consciously.
+    \\
+    \\
+	In the very beggining of this project, we tried a lot of different locking approaches such as lock everything. Of course the results were preety much similar as the sequential ones. So we had to do a more aggressive locking and also change some global objects to thread safe. We first tried to understand which part of Soot, Doop uses to generate the facts, and then tried to make that specific part thread safe.
 
-	Luckily, in our case we used very few locks in both Doop and Soot. Below we explain in more detail.
 
     \thesissubsection{Doop Side}
-    	The only two things we had to lock to prevent races and deadlocks were an access to the output file and three methods that accessing a sootMethod.
+    	In Doop the only two things we had to lock to prevent races and deadlocks, were the writting of the output file and three methods that were accessing a global field at sootMethod. We explain below in more detail.
 
     	\thesissubsubsection{CSVDatabase}
-	    	Lock file to prevent more than one thread to write at the same time.
+	    	In the file \texttt{CSVDatabase.java} we had to lock the output file to prevent more than one thread to write at the same time. By synchronizing the predicate file, we ensure that output files are written by one thread at a time, and also have the right data.
 	    	\begin{figure}[H]
 \begin{lstlisting}
 synchronized(predicateFile) {
@@ -833,7 +841,7 @@ synchronized(predicateFile) {
 	        \end{figure}
 
 	    \thesissubsubsection{Represantation}
-	    	The other synchronization we had to provide was in three methods that were accessing SootMethods while threads were active.
+	    	The other synchronization we had to provide was in three methods in the \texttt{Represantetion.java} file. Those methods were accessing and trying to retrieve some fileds from a global object at their SootMethod argument while threads were still active.
 	    	\begin{figure}[H]
 \begin{lstlisting}
 public synchronized String signature(SootMethod) { /*...*/ }
@@ -844,11 +852,12 @@ public synchronized String compactMethod(SootMethod) { /*...*/ }
 	        \end{figure}
 
 
+
     \thesissubsection{Soot Side}
-	    The way Soot is implemented, it has a class that encloses all global objects (\texttt{G.java}). As we mentioned before, Soot does much more than just translating bytecode to jimple, so it has various phases and a lot of different options for transformations given. The phase that translates bytecode to jimple is jb phase.
+	    The way Soot is implemented, it has a class that encloses all global objects (\texttt{G.java}). As we mentioned before, Soot does much more than just translating bytecode to jimple, so it has various phases and a lot of different options for transformations given. The phase that translates bytecode to jimple is jb phase. In this phase we found all global objects, the methods that affects them and the methods that those global objects call and we synchronized them. 
 
 	    \thesissubsubsection{Type Assigner}
-	    	The class \texttt{JimpleBodyPack} applies the transformations corresponding to the given options. In our case, it applies a \texttt{"jb.tr"} which means \textit{"jimple body transformation"}. From bytecode to jimple translation this is the only pack needed, so we lock before applying Type Assigner and unlock afterwards.
+	    	The class \texttt{JimpleBodyPack} applies the transformations corresponding to the given options. In our case, it applies a \texttt{"jb.tr"} which means \textit{"jimple body transformation"}. From bytecode to jimple translation this is the only pack needed, so we lock before applying Type Assigner and unlock afterwards. All the transformations that take place to permform the bytecode to Jimple translation are first inserted and then retrieved from \texttt{packManager}, a global object. So to prevent race conditions, we changed the \texttt{packManager} from global to thread-local. The new \texttt{packManager} that we use is \texttt{PackManager}.
 	    	\begin{figure}[H]
 \begin{lstlisting}
 lock.lock();
@@ -859,7 +868,7 @@ lock.unlock();
 	        \end{figure}
 
 	    \thesissubsubsection{Pack Manager}
-	    	The class that manages the Packs containing the various phases and their options is \texttt{PackManager}. Lock before retrieving Class Hierarchy Analysis, unlock afterwards.
+	    	As we mentioned before, the class that manages the Packs containing the various phases and their options is \texttt{PackManager}. We lock before retrieving Class Hierarchy Analysis and unlock afterwards.
 			\begin{figure}[H]
 \begin{lstlisting}
 lock.lock();
@@ -872,13 +881,11 @@ lock.unlock();
 	        \end{figure}
 
 	    \thesissubsubsection{Shimple -ssa}
-	    	We also use Soot to provide \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. Shimple generation is very similar to jimple but with a few differences.
-	    	blahblabh prepei na to dw kiallo auto
-	    	The class that handles the translation from jimple to shimple is \texttt{Shimple.java}. So far we have synchronized all Shimple-Body-creation methods.
+	    	We also use Soot to produce \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. The way Shimple is generated is like Jimple but instead of producing Jimple in the final transformation, \texttt{Shimple.java} is called, which is the class that handles the translation from jimple to shimple. So we synchronized all Shimple-Body-creation methods that access global objects. To generate Shimple insted of Jimple, Soot must be given the \texttt{-ssa} flag. 
 
 
 \thesissection{Time Results}
-	Below are presented fact generation times for Soot 2.5.0, latest Soot version and all our approaches.
+	Summarizing, below are presented fact generation times for the previous version of Soot (2.5.0), the latest one and all our four approaches.
 
     \begin{figure}[H]
         \centering
@@ -902,8 +909,6 @@ lock.unlock();
         \caption{Fact Generation Time Results}
     \end{figure}
 
-    In conclusion, just changing the soot version and applying the latest one gave a speedup up to 30-40\%. With the latest soot-version and our best approach we achived a speedup of 60-80\%. Our third attempt (Fork/Join Framework) was not a successful one, it was better than the sequential fact generation (obviously) but not as good as the other three.
-
     \begin{table}[H]
     \centering
     \begin{tabular}{@{}l|lllll@{}}
@@ -920,12 +925,13 @@ lock.unlock();
     \caption{Summarizing best times of all approaches with pool size 16-32}
     \end{table}
 
+    In conclusion, just by changing the soot version and applying the latest one, gave a speedup up to 30-40\%. With the latest soot-version and our best approach we achived a speedup of 60-80\%. Our third attempt (Fork/Join Framework) was not a successful one, it was better than the sequential fact generation (obviously) but not as good as the other three. 
+    We used very few locks in both Doop and Soot so the locking didn't affect much our results. We also have to mention that with those locks Soot is thread safe for the way it is used by Doop (Java bytecode to Jimple or Shimple translation), not for all the other functionalities it has. 
 
 
 
 
-
-\begin{thesisabbreviations}[ACRONYMS AND ABBREVIATIONS]
+\begin{thesisabbreviations}[Acronyms and Abbreviations]
 	\begin{tabularx}{\textwidth}{|X|X|}
         \hline
         IR & Intermediate Representation \\
@@ -944,23 +950,23 @@ lock.unlock();
 \end{thesisabbreviations}
 
 
-\begin{thesisbibliography}[REFERENCES]{99}
+\begin{thesisbibliography}[References]{99}
 	\bibitem{Doop: Framework for Java Pointer Analysis}
 		"Doop: Framework for Java Pointer Analysis"
-		[Online]
-		Available: \url{http://doop.program-analysis.org/}
+        
+        [Online] \\ Available: \url{http://doop.program-analysis.org/} \\
 	\bibitem{Sable: Soot}
 		"Sable: Soot"
-		[Online]
-		Available: \url{https://sable.github.io/soot/}
+        
+        [Online] \\ Available: \url{https://sable.github.io/soot/} \\
 	\bibitem{Apache Ant}
 		"Apache Ant"
-		[Online]
-		Available: \url{http://ant.apache.org/}
+        
+        [Online] \\ Available: \url{http://ant.apache.org/} \\
     \bibitem{Oracle Java Fork/Join Framework}
         "Oracle Java Fork/Join Framework"
-        [Online]
-        Available: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html}
+        
+        [Online] \\ Available: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html} \\
 \end{thesisbibliography}
 
 
