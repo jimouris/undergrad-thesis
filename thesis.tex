@@ -93,7 +93,8 @@ to someone.
 \begin{thesisacknowledgments}[Acknowledgements]
     I would like to thank my supervisor, Prof. Yannis Smaragdakis for the chance he gave me with this project and also for his support and help all these months.
     \\
-    My sincere thanks also goes to M.Sc. candidate and my friend Anastasis Antoniadis for his patience and guidance which had been very usefull to finish this work.
+    \\
+    My sincere thanks also goes to M.Sc. candidate and my friend Anastasis Antoniadis for his patience and guidance which had been very helpfull to finish this work.
 \end{thesisacknowledgments}
 
 \renewcommand\contentsname{Contents}
@@ -261,10 +262,10 @@ java.lang.Class
         Soot has various phases and a lot of different options for transformations given. The one that is responsible for bytecode to jimple translation is jb phase. In this phase, first Soot translates bytecode to untyped Jimple and introduces new local variables; Jimple is stackless, Soot is using variables for stack locations. Then it inferres Types to the untyped jimple. The next step is to linearize all the expressions to statements that only reference at most 3 local variables or constants.
 
         Getting a little deeper, in a general case the way Soot handles Java bytecode classes is the following: \\
-        Soot is launched by specifying a directory with the Application code as a parameter. In this example only Java bytecode, either a class file or a jar. First, the \texttt{main()} method of the Main class is executed and calls \texttt{Scene.loadNecessaryClasses()} (In our case Doop calls it). This method loads basic Java classes and then loads specific Application classes by calling \texttt{loadClass()}. Then, \texttt{SootResolver.resolveClass()} is called. The resolver calls \texttt{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. In our case the class source is a CoffiClassSource because it is the coffi module which handles the conversion from Java bytecode to Jimple. Then, the resolver having a reference to a class source, calls \texttt{resolve()} on it. This methods in turn calls \texttt{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For example, if during an analysis with Soot the analysis code calls \texttt{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \texttt{getActiveBody()} will call \texttt{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. The Jimple code representation of the method can then be analyzed and/or transformed.
+        Soot is launched by specifying a directory with the Application code as a parameter. The way Doop intergrates with Soot, it is only Java bytecode, either a class file or a jar. First, the \texttt{main()} method of the Main class is executed and calls \texttt{Scene.loadNecessaryClasses()} (In our case Doop calls \texttt{Scene.loadNecessaryClasses()} not Main class). This method loads basic Java classes and then loads specific Application classes by calling \texttt{loadClass()}. Then, \texttt{SootResolver.resolveClass()} is called. The resolver calls \texttt{SourceLocator.getClassSource()} to fetch a reference to a ClassSource, an interface between the file containing the Java bytecode and Soot. For Java bytecode to Jimple translation the class source is a \texttt{CoffiClassSource} because it is the coffi module which handles this conversion. Then, the resolver having a reference to a class source, calls \texttt{resolve()} on it. This methods in turn calls \texttt{soot.coffi.Util.resolveFromClassFile()} which creates a SootClass from the corresponding Java bytecode class. All source fields of Soot class methods are set to refer to a CoffiMethodSource object. This object is used later to get the Jimple representation of the method. For example, if during an analysis with Soot the analysis code calls \texttt{SootMethod.getActiveBody()} and the Jimple code of the method was not already generated, \texttt{getActiveBody()} will call \texttt{CofficMethodSource.getBody()} to compute Jimple code from the Java bytecode. Actually this method \texttt{getActiveBody()} spends the most of the Java bytecode to Jimple conversion time. The Jimple code representation of the method can then be analyzed and/or transformed.
 
     \thesissubsection{Compiling \& Running Soot}
-    	Soot uses ant \cite{Apache Ant} for compiling and building the project. So with minor modifications in the \texttt{ant.settings} file, is very easy to compile and run Soot.
+    	Soot uses ant \cite{Apache Ant} for compiling and building the project. With minor modifications in the \texttt{ant.settings} file, it is very easy to compile and run every version of Soot.
         \begin{figure}[H]
 \begin{lstlisting}
 ant                 /* To compile */
@@ -414,7 +415,7 @@ public class inheritanceTest extends java.lang.Object {
 
 
 \thesissection{Parallelizing Fact Generation}
-    We now describe the basic idea of Fact Generation from Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). Below is presented the \texttt{FactGenerator.java} which implements the work described above and then calls Soot.
+    We now describe the basic idea of Fact Generation from the Doop side. Given all the classes (sootClasses) to generate, Doop iterates each one of them; writes all the superClasses, if exist, and then generate all fields (sootFields) and methods (sootMethods). Below is presented the \texttt{FactGenerator.java} which implements the work described above and then calls Soot.
     \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -509,7 +510,7 @@ public class MethodGenerator {
             batik            	& 26          & 23           & 18           \\ \bottomrule
             \end{tabular}
             \newline
-			\caption{One Thread Per Method Time Examples, with pool size: 4, 16, 32}
+			\caption[One Thread Per Method Time Examples]{One Thread Per Method Time Examples, with pool size: 4, 16, 32}
 		\end{table}
 
 
@@ -562,7 +563,7 @@ public class ClassGenerator {
             batik            	& 26          & 23           & 18           \\ \bottomrule
             \end{tabular}
             \newline
-			\caption{One Thread Per Class Time Examples, with pool size: 4, 16, 32}
+			\caption[One Thread Per Class Time Examples]{One Thread Per Class Time Examples, with pool size: 4, 16, 32}
 		\end{table}
 
 
@@ -643,7 +644,7 @@ public class ClassGenerator {
             batik            	& 34          & 37           & 38           \\ \bottomrule
             \end{tabular}
             \newline
-			\caption{Fork/Join Time Examples, with threshold 2, 3, 4 and pool size 16}
+			\caption[Fork/Join Time Examples]{Fork/Join Time Examples, with threshold 2, 3, 4 and pool size 16}
 		\end{table}
 
 
@@ -717,7 +718,7 @@ public class ClassGenerator {
         batik         & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}23\\ 22\\ 21\end{tabular} & \begin{tabular}[c]{@{}l@{}}24\\ 20\\ 17\end{tabular} & \begin{tabular}[c]{@{}l@{}}25\\ 17\\ 17\end{tabular} \\ \bottomrule
         \end{tabular}
         \newline
-        \caption{Multiple Classes Per Thread Time Examples, with pool size: 4, 16, 32 and classes per thread: 2, 3, 4}
+        \caption[Multiple Classes Per Thread Time Examples]{Multiple Classes Per Thread Time Examples, with pool size: 4, 16, 32 and classes per thread: 2, 3, 4}
         \end{table}
 
 
@@ -810,10 +811,7 @@ public class FactGenerator implements Runnable {
 \end{lstlisting}
         \caption{Final approach: ThreadFactory.java, FactGenerator.java}
         \end{figure}
-kai isws kapoia akoma logia edw gia na e3hghsw blah
-blah
-blah
-
+        At first, the Main method calls \texttt{driver.doInParallel(classes)} which takes as an argument all the \texttt{SootClasses} to be generated. \texttt{Driver.java} in turn calculates the available threads to run the fact generation proccess and then calls \texttt{Driver.generate(c)} method for each SootClass. Then the \texttt{Driver.generate} creates a new \texttt{ThreadFactory} thread for each \_classSplit classes (e.g \_classSplit = 3 classes). \texttt{ThreadFactory} in turn calls the original \texttt{FactGenerator} (from the sequential approach) but instead of having a \texttt{generate} method, it has a \texttt{run} method with the same body.
 
 \thesissection{Locking}
 	Along with threads come locks. An incorrect use of locking could have very negative effects on the results. Having more locks than we actually needed would had lead to a time result as slow as the sequential one. Having less, would had lead to races and deadlocks. So, locks should be used very consciously.
@@ -922,7 +920,7 @@ lock.unlock();
     batik             & 63                  & 34                 & 18                     & 17                    & 17                      \\ \bottomrule
     \end{tabular}
     \newline
-    \caption{Summarizing best times of all approaches with pool size 16-32}
+    \caption[Summarizing best times of all approaches]{Summarizing best times of all approaches with pool size 16-32}
     \end{table}
 
     In conclusion, just by changing the soot version and applying the latest one, gave a speedup up to 30-40\%. With the latest soot-version and our best approach we achived a speedup of 60-80\%. Our third attempt (Fork/Join Framework) was not a successful one, it was better than the sequential fact generation (obviously) but not as good as the other three. 
