@@ -127,14 +127,14 @@ to someone.
 
 
 \begin{thesisprologue}[Preface]
-    This project was developed in Athens, Greece between September 2015 and March 2016. In the very beginning of this work, I had to understand how the Doop framework works for pointer or points-to analysis. I also had to get used to Soot framework, which intergrates with Doop to translate Java bytecode to a three address code language (Jimple IR) and produce the facts for the analysis. After all these, I tried to understand the way Java bytecode to Jimple translation is implemented and tried to parallelize it. 
+    This project was developed in Athens, Greece between September 2015 and April 2016. In the very beginning of this work, I had to understand how the Doop framework works for pointer or points-to analysis. I also had to get used to Soot framework, which intergrates with Doop to translate Java bytecode to a three address code language (Jimple IR) and produce the facts for the analysis. After all these, I tried to understand the way Java bytecode to Jimple translation is implemented and tried to parallelize it. 
 \end{thesisprologue}
 
 \thesissection{Introduction}
     Soot is a Java bytecode optimization framework which my colleagues use for fact generation in order to perform points-to analysis of Java programs, in Datalog, using the Doop framework. For this task, I had to parallelize the fact generation process and proceed to the appropriate modifications in both Soot and Doop. 
 
 \thesissection{Doop}
-    Doop is a framework for pointer, or points-to, analysis of Java programs. Doop implements a range of algorithms, including context insensitive, call-site sensitive, and object-sensitive analyses, all specified modularly as variations on a common code base.
+    Doop is a framework for pointer, or points-to, analysis of Java programs. It implements a range of different algorithms such as context insensitive, call-site sensitive, object-sensitive analyses and a lot of other variations of these algorithms.
 
 	From the Doop website: \\
     \textit{"Doop builds on the idea of specifying pointer analysis algorithms declaratively, using Datalog: a logic-based language for defining (recursive) relations. Doop carries the declarative approach further than past work by describing the full end-to-end analysis in Datalog and optimizing aggressively through exposition of the representation of relations (for example indexing) to the Datalog language level. Doop uses the Datalog dialect and engine of LogicBlox."}
@@ -162,7 +162,7 @@ to someone.
         \end{table}
 
     \thesissubsection{Fact Table Example}
-    	After the fact generation finishes, Doop executes queries to the database and computes the results depending on the analysis. At the end of an analysis, a symbolic link for the results is created for the resulting database. Also, for convenience, a second symbolic link is created at top level called last-analysis, each time pointing to the latest successful analysis.\\
+    	After the fact generation finishes, Doop executes queries to the database and computes the results depending on the analysis. At the end of an analysis, a symbolic link is created for the resulting database, and another one at top level called last-analysis, each time pointing to the latest successful analysis. \\
         \\
         A subset of the facts imported into the database for a simple \texttt{helloWorld} example is presented below. 
     	\begin{figure}[H]
@@ -240,7 +240,7 @@ java.lang.Class
     \cite{Sable: Soot}
 
     \thesissubsection{Applying the latest Soot version}
-    	Doop used Soot version 2.5.0, to minimize the time consumed in fact generation phase, before we tried to parallelize it, we applied the latest (Sept. 2015 develop branch) Soot version. We faced a lot of compatibility problems in order to use it properly but it gave a speed up of 40\%. Below are presented a few time examples with Soot-2.5.0 and the latest one.
+    	Doop used Soot version 2.5.0, to minimize the time consumed in fact generation phase, before we tried to parallelize it, we applied the latest (Sept. 2015 develop branch) Soot version. We faced a lot of compatibility problems in order to use it properly but it gave a speed up of 30-50\%. Below are presented a few time examples with Soot-2.5.0 and the latest one.
 
 		\begin{figure}[H]
 			\centering
