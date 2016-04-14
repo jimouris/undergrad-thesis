@@ -162,7 +162,7 @@ to someone.
     \thesissubsection{Fact Generation}
         Doop, before running a pointer or points-to analysis, invokes Soot to generate either Jimple (\textbf{J}ava s\textbf{imple}) or Shimple (an \textbf{S}sa version of J\textbf{imple}) intermediate representations. Jimple is a typed 3-address IR suitable for performing optimizations; it only has 15 statements. Then from Jimple the facts are generated and imported into a database with multiple tables, so the analysis rules can process them. Shimple is an SSA-version of Jimple; first Jimple is generated and then Soot applies a transformation pack to Jimple body to create Shimple.
 
-        The main motivation behind this thesis was the fact that the sequential fact generation time amounts to than 50\% of the total execution time (both fact generation and analysis), either for Jimple or Shimple.
+        The main motivation behind this thesis was the fact that the sequential fact generation time amounts to more than 50\% of the total execution time (both fact generation and analysis), either for Jimple or Shimple.
 
 
         \thesissubsection{Doop Time Examples}
@@ -180,7 +180,7 @@ to someone.
         \end{table}
 
     \thesissubsection{Fact Table Example}
-    	After the fact generation finishes, Doop executes a set of Datalog rules, which are the specification of the selected analysis, on the EDB produced after the facts import produces new EDB until fix point is reached. At the end of an analysis, a symbolic link is created for the resulting database, and another one at top level, each time pointing to the latest successfully completed analysis.
+    	After the fact generation finishes, Doop executes a set of Datalog rules, which are the specification of the selected analysis. Those Datalog rules run on the EDB until fix point is reached. At the end of an analysis, a symbolic link is created for the resulting database, and another one at top level, each time pointing to the latest successfully completed analysis.
 
         Columns at the facts are tab-separated, every column corresponds to an argument of the Datalog rule. 
         A subset of the facts imported into the database for a simple \texttt{helloWorld} example is presented below.
