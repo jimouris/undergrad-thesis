@@ -64,7 +64,7 @@
 \begin{thesisabstract}[ABSTRACT]
 	The use of deductive databases for declarative program analysis has become increasingly popular in recent years. A typical example is Datalog databases. Generating the initial data that is kept in the database is often as expensive as the program analysis itself and does not scale as the program size increases.\\
 	\\
-    In this thesis we present a parallel approach of the fact generation process from Java bytecode in order to perform pointer, or points-to analysis in Java programs using the Doop framework. Our goal is to evaluate the benefits of a parallel implementation compared to the non-parallel one.
+    In this thesis we present a parallel approach of the fact-generation process from Java bytecode in order to perform pointer, or points-to analysis in Java programs using the Doop framework. Our goal is to evaluate the benefits of a parallel implementation compared to the non-parallel one.
 
     \thesiskeywords{Subject Area}{Static program analysis}
                 {Keywords}{Static program analysis}
@@ -140,7 +140,7 @@ to someone.
 \thesissection{Introduction}
 	Soot \cite{Sable: Soot} is a Java bytecode optimization framework which my colleagues use for fact generation in order to perform points-to\footnote{Points-to Analysis \cite{Points-to Analysis}} ---or more complex\footnote{More Sound Static Handling of Java Reflection \cite{More Sound Static Handling of Java Reflection}, Introspective Analysis: Context Sensitivity \cite{Introspective Analysis: Context Sensitivity}, Set-Based Pre-Processing for Points-To Analysis \cite{Set-Based Pre-Processing for Points-To Analysis}, Hybrid Context Sensitivity for Points-To Analysis \cite{Hybrid Context Sensitivity for Points-To Analysis}}--- analysis of Java programs, in Datalog, using the Doop framework \cite{Doop: Framework for Java Pointer Analysis}. 
 
-	This thesis aims to minimize the time consumed by the fact generation process and also guarantee the integrity and correctness of the generated facts. For this task, we had to parallelize the fact generation process and proceed to the appropriate modifications in both Soot and Doop.
+	This thesis aims to minimize the time consumed by the fact-generation process and also guarantee the integrity and correctness of the generated facts. For this task, we had to parallelize the fact-generation process and proceed to the appropriate modifications in both Soot and Doop.
 
 	The rest of the thesis is organized as follows:
 	\begin{enumerate}
@@ -164,19 +164,19 @@ to someone.
     \thesissubsection{Fact Generation}
         Doop, before running a pointer or points-to analysis, invokes Soot to generate either Jimple (\textbf{J}ava s\textbf{imple}) or Shimple (an \textbf{S}sa version of J\textbf{imple}) intermediate representations. Jimple is a typed 3-address IR suitable for performing optimizations; it only has 15 statements. Then from Jimple the facts are generated and imported into a database with multiple tables, so the analysis rules can process them. Shimple is an SSA-version of Jimple; first Jimple is generated and then Soot applies a group of transformations to Jimple body to create Shimple.
 
-        The main motivation behind this thesis was the fact that the sequential fact generation time amounts to more than 50\% of the total execution time (both fact generation and analysis), either for Jimple or Shimple.
+        The main motivation behind this thesis was the fact that the sequential fact-generation time amounts to more than 50\% of the total execution time (both fact generation and analysis), either for Jimple or Shimple.
 
 
         \thesissubsection{Doop Time Examples}
-        Below we present a few timing\footnote{All the time measurements are on a 64-bit machine with two octa-core Intel Xeon E5-2667 (v2) CPUs at 3.30GHz (for a total of 32 logical cores) and 256GB of RAM.} examples of the sequential Doop Fact Generation and total execution time (both fact generation and analysis times) with Soot version 2.5.0.
+        Below we present a few timing\footnote{All the time measurements are on a 64-bit machine with two octa-core Intel Xeon E5-2667 (v2) CPUs at 3.30GHz (for a total of 32 logical cores) and 256GB of RAM.} examples of the sequential Doop fact generation and total execution time (both fact generation and analysis times) with Soot version 2.5.0.
 
         \begin{table}[H]
             \centering
                 \begin{tabular}{llll}
                 \hline
                 \textbf{Soot 2.5.0}      & \textbf{antlr.jar} & \textbf{hsqldb.jar} & \textbf{batik.jar} \\ \hline
-                \textbf{Fact Generation} & 1.16 min.          & 1.23 min.           & 2.26 min.          \\
-                \textbf{Total time}      & 3.18 min.          & 3.21 min.           & 4.34 min.          \\ \hline
+                \textbf{Fact generation} & 1.16 min.          & 1.23 min.           & 1.06 min.          \\
+                \textbf{Total time}      & 3.18 min.          & 3.21 min.           & 3.13 min.          \\ \hline
                 \end{tabular}
                 \newline
             \caption[Soot 2.5.0 FG times]{Soot 2.5.0 FG time compared to total execution time.}
@@ -454,9 +454,9 @@ public class inheritanceTest extends java.lang.Object {
 
 
 \thesissection{Parallelizing Fact Generation}
-    In order to parallelize the fact generation part, we did not change the way facts are generated from Soot. We actually called Soot concurrently from Doop and made Soot thread safe.\\
-    \\
-    We now describe the basic idea of Fact Generation from the Doop side. Given all the classes (sootClasses) to generate, Doop iterates over each one of them and then generate all fields (sootFields) and methods (sootMethods). Below we show the \texttt{FactGenerator.java} which implements the work described above and then calls Soot \texttt{retrieveActiveBody}.
+    In order to parallelize the fact generation part, we did not change the way facts are generated from Soot. We actually called Soot concurrently from Doop and made Soot thread safe.
+
+    We now describe the basic idea of fact generation from the Doop side. Given all the classes (sootClasses) to generate, Doop iterates over each one of them and then generate all fields (sootFields) and methods (sootMethods). Below we show the \texttt{FactGenerator.java} which implements the work described above and then calls Soot \texttt{retrieveActiveBody}.
     \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -488,7 +488,7 @@ public class FactGenerator {
     \caption{Sequential Fact Generation}
     \end{figure}
 
-    Having the previous basic structure in mind, and considering that \texttt{m.retrieveActiveBody()} occupies more than 80\% of total fact generation time, we tried to parallelize the method that calls \texttt{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. Three of them are pretty similar while the fourth one is based on a recursive Java Framework (Fork/Join Framework). Below we present some Fact Generation time examples with the sequential FG.
+    Having the previous basic structure in mind, and considering that \texttt{m.retrieveActiveBody()} occupies more than 80\% of total fact-generation time, we tried to parallelize the method that calls \texttt{m.retrieveActiveBody()}. In order to do that, we approached the problem in four ways. Three of them are pretty similar while the fourth one is based on a recursive Java Framework (Fork/Join Framework \cite{Oracle Java Fork/Join Framework}). Below we present some Fact-Generation timings with the sequential FG and the latest Soot version.
     \begin{table}[H]
 		\centering
         \begin{tabular}{@{}ll@{}}
@@ -501,12 +501,12 @@ public class FactGenerator {
         batik          & 63                    \\ \bottomrule
         \end{tabular}
         \newline
-		\caption{Sequential Fact Generation Time Examples}
+		\caption{Sequential Fact-Generation Time Examples}
 	\end{table}
 
 
     \thesissubsection{One Thread Per Method}
-        Our first approach to parallelize Fact Generation is similar as the sequential one, but instead of having a loop over all Soot Methods and call \texttt{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, MethodGenerator, which is identical to FactGenerator and in addition has a \texttt{run()} method to generate sootMethods.
+        Our first approach to parallelize fact-generation is similar as the sequential one, but instead of having a loop over all Soot methods and call \texttt{generate(m, session)}, we assign the task to a thread for each one of them. We created a new Java class, \texttt{MethodGenerator}, which is identical to \texttt{FactGenerator} and in addition has a \texttt{run()} method to generate every method.
         \begin{figure}[H]
 \begin{lstlisting}
 public class FactGenerator {
@@ -537,7 +537,7 @@ public class MethodGenerator {
         \caption{One Thread Per Method}
         \end{figure}
 
-        The results were very encouraging as we achieved a 60-70\% speedup. Below we show some Fact Generation time examples with the \texttt{One Thread Per Method FG} approach for various thread-pool sizes (such as 4, 16 and 32).
+        The results were very encouraging as we achieved a 325-400\% speedup compared to the sequential FG (latest Soot version). Below we show some fact-generation timing examples with the \texttt{One Thread Per Method FG} approach for various thread-pool sizes (such as 4, 16 and 32).
 		\begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
@@ -590,7 +590,7 @@ public class ClassGenerator {
         \caption{One Thread Per Class}
         \end{figure}
 
-        The results were slightly better than the previous effort, but without achieving a remarkable speedup. Below are some Fact Generation timing examples with the \texttt{One Thread Per Class FG} approach for various thread-pool sizes (such as 4, 16 and 32).
+        The results were slightly better than our previous effort, but without achieving a remarkable speedup. Below we present some fact-generation timings with the \texttt{One Thread Per Class FG} approach for various thread-pool sizes (such as 4, 16 and 32).
         \begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
@@ -670,7 +670,7 @@ public class ClassGenerator {
 \end{lstlisting}
         \caption{Fork/Join Framework}
         \end{figure}
-        As we already mentioned, Fork/Join framework is designed for work that can be broken into smaller pieces recursively, in contrast with the fact generation process which is not designed to run recursively. Thus, the results were worse than the two previous approaches (still better than then sequential approach). Below are some Fact Generation timing examples with the \textit{Fork/Join Framework FG} approach for various threshold values (such as 2, 3 and 4). The threshold value is the number of classes for a thread to process.
+        As we already mentioned, Fork/Join framework is designed for work that can be broken into smaller pieces recursively, in contrast with the fact-generation process which is not designed to run recursively. Thus, the results were worse than the two previous approaches (still better than then sequential approach). Below are some fact-generation timing examples with the \textit{Fork/Join Framework FG} approach for various threshold values (such as 2, 3 and 4). The threshold value is the number of classes for a thread to process.
 		\begin{table}[H]
 			\centering
             \begin{tabular}{@{}l|lll@{}}
@@ -690,7 +690,7 @@ public class ClassGenerator {
 
 
     \thesissubsection{Multiple Classes Per Thread}
-        Our last approach is similar to the second one, but instead of having one thread per class, we now have one thread per multiple classes. Even in the second approach some threads had minimal work to do so we decided to grow the amount of work assigned to each thread. Below we show an abstract version of the code implementing the \textit{Multiple Classes Per Thread} approach.
+        Our last approach is similar to the second one, but instead of having one thread per class, we now have one thread per multiple classes. Even in the second approach some threads had minimal work to do, so we decided to grow the amount of work assigned to each thread. Below we show an abstract version of the code implementing the \textit{Multiple Classes Per Thread} approach.
 
         \begin{figure}[H]
 \begin{lstlisting}
@@ -741,9 +741,7 @@ public class ClassGenerator {
         \caption{Multiple Classes Per Thread: ClassGenerator.java}
         \end{figure}
 
-        This approach minimizes the overhead produced by assignments and allocations of the first and second approach, this one had so far the best timing results. Below are presented some Fact Generation timing examples with the \textit{Multiple Classes Per Thread FG} approach for various thread-pool sizes (such as 4, 16 and 32) and various number of classes per thread.
-
-        This approach minimizes the overhead produced by assignments and allocations of our first and second effort. Therefore the \textit{Multiple Classes Per Thread FG} approach produced the best timing results so far. Below we show some Fact Generation timings for various thread-pool sizes (such as 4, 16 and 32) and various numbers of classes per thread.
+        This approach minimizes the overhead produced by assignments and allocations of our first and second effort. Therefore the \textit{Multiple Classes Per Thread FG} approach produced the best timing results so far. Below we show some fact-generation timings for various thread-pool sizes (such as 4, 16 and 32) and various numbers of classes per thread.
 
 \begin{table}[H]
         \centering
@@ -813,8 +811,9 @@ public class Driver {
     }
 
     public void doInParallel(List<SootClass> sootClasses) {
-        for(SootClass c : sootClasses)
+        for(SootClass c : sootClasses) {
             generate(c);
+        }
         _executor.shutdown();
         _executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }
@@ -837,10 +836,11 @@ public class Driver {
 \begin{lstlisting}
 public class ThreadFactory {
     public Runnable newRunnable(List<SootClass> sootClasses) {
-        if (_makeClassGenerator)
+        if (_makeClassGenerator) {
             return new FactGenerator(_factWriter, _ssa, sootClasses);
-        else
+        } else {
             return new FactPrinter(_ssa, _toStdout, _outputDir, _printWriter, sootClasses);
+        }
     }
 }
 
@@ -855,7 +855,7 @@ public class FactGenerator implements Runnable {
 \end{lstlisting}
         \caption{Final approach: ThreadFactory.java, FactGenerator.java}
         \end{figure}
-        At first, the Main method calls \texttt{driver.doInParallel(classes)} which takes as an argument all the \texttt{SootClasses} to be generated. \texttt{Driver.java} in turn calculates the available threads to run the fact generation process and then calls the \texttt{Driver.generate(c)} method for each SootClass. Then \texttt{Driver.generate} creates a new \texttt{ThreadFactory} thread for every \texttt{\_classSplit} classes (e.g \texttt{\_classSplit = 3} classes). \texttt{ThreadFactory} in turn calls the original \texttt{FactGenerator} (from the sequential approach) but instead of having a \texttt{generate} method, it has a \texttt{run} method with the same body.
+        At first, the Main method calls \texttt{driver.doInParallel(classes)} which takes as an argument all the \texttt{SootClasses} to be generated. \texttt{Driver.java} in turn calculates the available threads to run the fact-generation process and then calls the \texttt{Driver.generate(c)} method for each SootClass. Then \texttt{Driver.generate} creates a new \texttt{ThreadFactory} thread for every \texttt{\_classSplit} classes (e.g \texttt{\_classSplit = 3} classes). \texttt{ThreadFactory} in turn calls the original \texttt{FactGenerator} (from the sequential approach) but instead of having a \texttt{generate} method, it has a \texttt{run} method with the same body.
 
 \thesissection{Locking}\label{Ch:Locking}
 	Along with threads come locks. An incorrect use of locking could have severe impact on performance, produce incorrect results or even lead to non-termination of the fact-generation process. A conservative approach could lead to having more locks than necessary which would be a major source of bottleneck. Having fewer could lead to more races. So, locks had to be used with extreme care.
@@ -865,7 +865,7 @@ public class FactGenerator implements Runnable {
 
 
     \thesissubsection{Doop Side}
-    	In Doop the only tasks that required synchronization to avoid any race conditions, which would lead to the corruption of the fact generation results, were the writing to the output files and three methods that were accessing the same field of each SootMethod object. The code modifications are explained below.
+    	In Doop the only tasks that required synchronization to avoid any race conditions, which would lead to the corruption of the fact-generation results, were the writing to the output files and three methods that were accessing the same field of each SootMethod object. The code modifications are explained below.
 
     	\thesissubsubsection{CSVDatabase}
 	    	In the file \texttt{CSVDatabase.java} we had to lock each output \texttt{.facts} file to prevent more than one threads from writing simultaneously. By synchronizing the predicate file, we ensure that output files are written by one thread at a time and as a result the integrity and correctness of the generated facts are guaranteed.
@@ -910,8 +910,8 @@ lock.unlock();
 	        \end{figure}
 
 	    \thesissubsubsection{Pack Manager}
-	    	As mentioned before, the groups of transformations (Soot names them \texttt{"packs"}) containing the various phases and their options are managed by the class \texttt{PackManager}. We used another one lock before retrieving Class Hierarchy Analysis and unlock afterwards.
-			\begin{figure}[H]
+	    	As mentioned before, the groups of transformations (Soot names them \texttt{"packs"}) containing the various phases and their options are managed by the class \texttt{PackManager}. To ensure thread-safety, we used another lock which protects a group of transformations for retrieving Class Hierarchy Analysis. 
+            \begin{figure}[H]
 \begin{lstlisting}
 lock.lock();
 p.add(new Transform("cg.cha", CHATransformer.v()));
@@ -919,10 +919,10 @@ p.add(new Transform("cg.spark", SparkTransformer.v()));
 p.add(new Transform("cg.paddle", PaddleHook.v()));
 lock.unlock();
 \end{lstlisting}
-	        \caption{PackManager.java}
-	        \end{figure}
-            This functionality is not currently necessary for Doop, but may be useful in the future and does not impact performance. 
-
+            \caption{PackManager.java}
+            \end{figure}
+            This functionality is not currently necessary for Doop, but may be useful in the future and does not impact performance.
+            
 	    \thesissubsubsection{Shimple -ssa}
 	    	We also use Soot to produce \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. The way Shimple is generated is similar to Jimple generation with the exception of a different final step, during which \texttt{Shimple.java} is called, which is the class handling the translation from Jimple to Shimple. In this case, we synchronized all Shimple-body-creation methods that access global objects, or can be accessed from more than one threads simultaneously. To generate Shimple instead of Jimple, Soot must be given the \texttt{-ssa} flag.
 
@@ -973,7 +973,7 @@ lock.unlock();
 \thesissection{Conclusions}
     In conclusion, just by updating the Soot version and applying the latest, gave a speedup of 145-160\%. With the latest soot-version and our best approach we achieved a speedup of 450-625\% compared to the sequential fact-generation with Soot version 2.5.0. Our third attempt (Fork/Join Framework) was not a successful one: it was better than the sequential fact generation (obviously) but not as good as the other three.
 
-    In most cases we used as few locks as possible in both Doop and Soot, so the locking did not hinder in a remarkable rate the performance of the fact-generation process. We also have to mention that with those locks Soot is thread safe for the way it is used by Doop (Java bytecode to Jimple or Shimple translation), but thread-safety is not guaranteed for all the other functionalities it provides.
+    In most cases we used as few locks as possible in both Doop and Soot, so the locking did not hinder in a remarkable rate the performance of the fact-generation process. We also have to mention that with those locks Soot is thread safe for the way it is used by Doop (Java bytecode to Jimple or Shimple translation), but thread-safety is not guaranteed for all the other functionality it provides.
 
 
 
