@@ -22,7 +22,7 @@
 \renewcommand{\school}{School of Science}
 \renewcommand{\department}{Department of Informatics and Telecommunications}
 \renewcommand{\thesisplace}{Athens}
-\renewcommand{\thesisdate}{July 2016}
+\renewcommand{\thesisdate}{May 2016}
 \renewcommand{\thesislabel}{Undergraduate Thesis}
 \renewcommand{\supervisorlabel}{Supervisors}
 \renewcommand{\idlabel}{R.N.}
@@ -45,7 +45,7 @@
 \renewcommand{\school}{Σχολή Θετικών Επιστημών}
 \renewcommand{\department}{Τμήμα Πληροφορικής και Τηλεπικοινωνιών}
 \renewcommand{\thesisplace}{Αθήνα}
-\renewcommand{\thesisdate}{Ιούλιος 2016}
+\renewcommand{\thesisdate}{Μάιος 2016}
 \renewcommand{\thesislabel}{Πτυχιακή Εργασία}
 \renewcommand{\supervisorlabel}{Επιβλέποντες}
 \renewcommand{\idlabel}{Α.Μ.}
@@ -62,8 +62,8 @@
 
 
 \begin{thesisabstract}[ABSTRACT]
-	The use of deductive databases for declarative program analysis has become increasingly popular in recent years. A typical example is Datalog databases. Generating the initial data that is kept in the database is often as expensive as the program analysis itself and does not scale well as the program size increases.\\
-	\\
+	The use of deductive databases for declarative program analysis has become increasingly popular in recent years. A typical example is Datalog databases. Generating the initial data that is kept in the database is often as expensive as the program analysis itself and does not scale well as the program size increases.
+
     In this thesis we present a parallel approach of the fact-generation process from Java bytecode in order to perform pointer, or points-to analysis in Java programs using the Doop framework. Our goal is to evaluate the benefits of a parallel implementation compared to the non-parallel one.
 
     \thesiskeywords{Subject Area}{Static program analysis}
@@ -77,8 +77,8 @@
 
 \begin{otherlanguage}{greek}
 \begin{thesisabstract}[ΠΕΡΙΛΗΨΗ]
-    Τα τελευταία χρόνια γίνεται όλο και πιο δημοφιλής η χρήση (συν)επαγωγικών βάσεων δεδομένων στη δηλωτική ανάλυση προγραμμάτων. Μια από τις πιο χαρακτηριστικές περιπτώσεις είναι βάσεις δεδομένων που χρησιμοποιούν Datalog. Η παραγωγή της αρχικής πληροφορίας που εισάγεται στη βάση δεδομένων για το αναλυόμενο πρόγραμμα σε πολλές περιπτώσεις είναι εξίσου δαπανηρή σε χρόνο με την ανάλυση του προγράμματος, ειδικά όσο το μέγεθος αυτού αυξάνεται. \\
-    \\
+    Τα τελευταία χρόνια γίνεται όλο και πιο δημοφιλής η χρήση (συν)επαγωγικών βάσεων δεδομένων στη δηλωτική ανάλυση προγραμμάτων. Μια από τις πιο χαρακτηριστικές περιπτώσεις είναι βάσεις δεδομένων που χρησιμοποιούν Datalog. Η παραγωγή της αρχικής πληροφορίας που εισάγεται στη βάση δεδομένων για το αναλυόμενο πρόγραμμα σε πολλές περιπτώσεις είναι εξίσου δαπανηρή σε χρόνο με την ανάλυση του προγράμματος, ειδικά όσο το μέγεθος αυτού αυξάνεται.
+
     Σε αυτή την πτυχιακή παρουσιάζουμε την παραλληλοποίηση της διαδικασίας παραγωγής της αρχικής πληροφορίας από Java bytecode με σκοπό να χρησιμοποιηθεί για ανάλυση δεικτών σε προγράμματα Java από το Doop framework. Ο στόχος μας είναι να αξιολογήσουμε τα οφέλη που προσφέρει μια παράλληλη υλοποίηση σε σχέση με την ακολουθιακή.
 
     \thesiskeywords{Θεματική Περιοχή}{Στατική ανάλυση προγραμμάτων}
@@ -92,14 +92,15 @@
 \end{otherlanguage}
 
 \begin{thesisdedication}
-to someone.
+To my parents, Ilias \& Eirini.
 \end{thesisdedication}
 
 \begin{thesisacknowledgments}[Acknowledgments]
-    I would like to thank my supervisor, Prof. Yannis Smaragdakis for the chance he gave me with this project and also for his support and help all these months.
-    \\
-    \\
+    I would like to thank my supervisor, Prof. Yannis Smaragdakis for the chance he gave me with this project and also for his support and help all these months. 
+
     My sincere thanks also goes to M.Sc. candidate and my friend Anastasis Antoniadis for his patience and guidance which had been very helpful to finish this work.
+
+    \hfill{\textit{May 2016}}
 \end{thesisacknowledgments}
 
 \renewcommand\contentsname{Contents}
@@ -144,14 +145,15 @@ to someone.
 
 	The rest of the thesis is organized as follows:
 	\begin{enumerate}
-		\item In Chapter 2 we present the Doop framework.
-		\item In Chapter 3 we present Soot framework which is invoked by Doop to generate the facts.
-		\item In Chapter 4 we present the four implemented approaches to parallelize fact generation.
-		\item In Chapter 5 we explain the locks needed to ensure thread safety.
-		\item In Chapter 6 we present our timing results and conclusions.
+		\item In Chapter \ref{Ch:Doop} we present the Doop framework.
+		\item In Chapter \ref{Ch:Soot} we present the Soot framework which is invoked by Doop to generate the facts.
+		\item In Chapter \ref{Ch:Parallelization} we present the four implemented approaches to parallelize fact generation.
+		\item In Chapter \ref{Ch:Locking} we explain the locks needed to ensure thread safety.
+        \item In Chapter \ref{Ch:Timings} we present our timing results.
+		\item In Chapter \ref{Ch:Conclusions} we arrive at conclusions.
 	\end{enumerate}
 
-\thesissection{Doop}
+\thesissection{Doop}\label{Ch:Doop}
     Doop \cite{Doop: Framework for Java Pointer Analysis} is a framework for pointer, or points-to, analysis of Java programs. It implements a range of different algorithms such as context insensitive, call-site sensitive, object-sensitive analyses and a lot of other variations of these algorithms.
 
 	From the Doop website: \\
@@ -261,7 +263,7 @@ java.lang.Class
         \end{figure}
 
 
-\thesissection{Soot}
+\thesissection{Soot}\label{Ch:Soot}
     Soot \cite{Sable: Soot} is the framework used by Doop to generate a relational representation of the analyzed program. Soot originally started off as a Java optimization framework, but by now it performs a lot of different tasks such as analyze, instrument, optimize and visualize Java and Android applications. Soot provides four intermediate representations for analyzing and transforming Java bytecode:
 	\begin{enumerate}
 		\item Baf: a streamlined representation of bytecode which is simple to manipulate.
@@ -453,7 +455,7 @@ public class inheritanceTest extends java.lang.Object {
 
 
 
-\thesissection{Parallelizing Fact Generation}
+\thesissection{Parallelizing Fact Generation}\label{Ch:Parallelization}
     In order to parallelize the fact generation part, we did not change the way facts are generated from Soot. We actually called Soot concurrently from Doop and made Soot thread safe.
 
     We now describe the basic idea of fact generation from the Doop side. Given all the classes (sootClasses) to generate, Doop iterates over each one of them and then generate all fields (sootFields) and methods (sootMethods). Below we show the \texttt{FactGenerator.java} which implements the work described above and then calls Soot \texttt{retrieveActiveBody}.
@@ -858,10 +860,9 @@ public class FactGenerator implements Runnable {
         At first, the Main method calls \texttt{driver.doInParallel(classes)} which takes as an argument all the \texttt{SootClasses} to be generated. \texttt{Driver.java} in turn calculates the available threads to run the fact-generation process and then calls the \texttt{Driver.generate(c)} method for each SootClass. Then \texttt{Driver.generate} creates a new \texttt{ThreadFactory} thread for every \texttt{\_classSplit} classes (e.g \texttt{\_classSplit = 3} classes). \texttt{ThreadFactory} in turn calls the original \texttt{FactGenerator} (from the sequential approach) but instead of having a \texttt{generate} method, it has a \texttt{run} method with the same body.
 
 \thesissection{Locking}\label{Ch:Locking}
-	Along with threads come locks. An incorrect use of locking could have severe impact on performance, produce incorrect results or even lead to non-termination of the fact-generation process. A conservative approach could lead to having more locks than necessary which would be a major source of bottleneck. Having fewer could lead to more races. So, locks had to be used with extreme care.
-    \\
-    \\
-	At the very beginning of this project, we tried a lot of different locking approaches such as lock everything. Of course the results were pretty much similar to the sequential ones. As a result we decided to implement finer-grained locking and also change some global objects to thread-local in order to achieve thread safety. We first tried to understand which part of Soot is used by Doop to generate the facts, and then tried to make that specific part thread safe.
+	Along with threads come locks. An incorrect use of locking could have severe impact on performance, produce incorrect results or even lead to non-termination of the fact-generation process. A conservative approach could lead to having more locks than necessary which would be a major source of bottleneck. Having fewer could lead to more races. So, locks had to be used with extreme care. 
+
+    At the very beginning of this project, we tried a lot of different locking approaches such as lock everything. Of course the results were pretty much similar to the sequential ones. As a result we decided to implement finer-grained locking and also change some global objects to thread-local in order to achieve thread safety. We first tried to understand which part of Soot is used by Doop to generate the facts, and then tried to make that specific part thread safe.
 
 
     \thesissubsection{Doop Side}
@@ -927,7 +928,7 @@ lock.unlock();
 	    	We also use Soot to produce \textbf{S}h\textbf{imple} which is an \textbf{SSA} variation of Jimple. The way Shimple is generated is similar to Jimple generation with the exception of a different final step, during which \texttt{Shimple.java} is called, which is the class handling the translation from Jimple to Shimple. In this case, we synchronized all Shimple-body-creation methods that access global objects, or can be accessed from more than one threads simultaneously. To generate Shimple instead of Jimple, Soot must be given the \texttt{-ssa} flag.
 
 
-\thesissection{Experimental Results}
+\thesissection{Experimental Results}\label{Ch:Timings}
 	Summarizing, below we gather all fact-generation times for the previous version of Soot (2.5.0), the latest and all our four approaches.
 
     \begin{figure}[H]
@@ -970,7 +971,7 @@ lock.unlock();
 
 
 
-\thesissection{Conclusions}
+\thesissection{Conclusions}\label{Ch:Conclusions}
     In conclusion, just by updating the Soot version and applying the latest, gave a speedup of 145-160\%. With the latest soot-version and our best approach we achieved a speedup of 450-625\% compared to the sequential fact-generation with Soot version 2.5.0. Our third attempt (Fork/Join Framework) was not a successful one: it was better than the sequential fact generation (obviously) but not as good as the other three.
 
     In most cases we used as few locks as possible in both Doop and Soot, so the locking did not hinder in a remarkable rate the performance of the fact-generation process. We also have to mention that with those locks Soot is thread safe for the way it is used by Doop (Java bytecode to Jimple or Shimple translation), but thread-safety is not guaranteed for all the other functionality it provides.
