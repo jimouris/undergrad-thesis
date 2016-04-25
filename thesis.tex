@@ -168,7 +168,7 @@ To my parents, Ilias \& Eirini.
 
         The main motivation behind this thesis was the fact that the sequential fact-generation time amounts to more than 50\% of the total execution time (both fact generation and analysis), either for Jimple or Shimple.
 
-
+\clearpage
         \thesissubsection{Doop Time Examples}
         Below we present a few timing\footnote{All the time measurements were performed on a 64-bit machine with two octa-core Intel Xeon E5-2667 (v2) CPUs at 3.30GHz (for a total of 32 logical cores) and 256GB of RAM.} examples of the sequential Doop fact generation and total execution time (both fact generation and analysis times) with Soot version 2.5.0.
 
@@ -181,7 +181,7 @@ To my parents, Ilias \& Eirini.
                 \textbf{Total time}      & 3.18 min.          & 3.21 min.           & 3.13 min.          \\ \hline
                 \end{tabular}
                 \newline
-            \caption[Soot 2.5.0 FG times]{Soot 2.5.0 FG time compared to total execution time.}
+            \caption[Soot 2.5.0 FG timings]{Soot 2.5.0 FG timings compared to total execution times.}
         \end{table}
 
     \thesissubsection{Fact Table Example}
@@ -204,7 +204,7 @@ To my parents, Ilias \& Eirini.
 \caption{ActualParam.facts}
         \end{figure}
 
-
+\clearpage
         \textbf{Assign local instruction.}\\
         \texttt{AssignLocal(?instruction, ?index, ?from, ?to, ?inmethod)}\\
         (Assignment \texttt{?to = ?from} in instruction \texttt{?instruction} with index \texttt{?index} in method \texttt{?inmethod})
@@ -247,7 +247,7 @@ java.io.PrintStream.toCharset/invoke/instruction2   2   charsetName java.io.Prin
 \caption{AssignHeapAllocation.facts}
         \end{figure}
 
-
+\clearpage
         \textbf{Definition of a class type.}\\
         \texttt{ClassType(?type)}\\
         (Type \texttt{?type} is a ClassType)
@@ -503,7 +503,7 @@ public class FactGenerator {
         batik          & 63                    \\ \bottomrule
         \end{tabular}
         \newline
-		\caption{Sequential Fact-Generation Time Examples}
+		\caption{Sequential fact-generation timing examples}
 	\end{table}
 
 
@@ -553,7 +553,7 @@ public class MethodGenerator {
             batik            	& 26          & 23           & 18           \\ \bottomrule
             \end{tabular}
             \newline
-			\caption[One Thread Per Method Time Examples]{One Thread Per Method Time Examples, with pool size: 4, 16, 32}
+			\caption[One thread per method timing examples]{One thread per method timing examples, with pool size: 4, 16, 32}
 		\end{table}
 
 
@@ -686,7 +686,7 @@ public class ClassGenerator {
             batik            	& 34          & 37           & 38           \\ \bottomrule
             \end{tabular}
             \newline
-			\caption[Fork/Join Timing Examples]{Fork/Join Timing Examples, with threshold 2, 3, 4 and pool size 16}
+			\caption[Fork/Join timing examples]{Fork/Join timing examples, with threshold 2, 3, 4 and pool size 16}
 		\end{table}
 
 
@@ -762,7 +762,7 @@ public class ClassGenerator {
         batik         & \textbf{\begin{tabular}[c]{@{}c@{}}4\\ 16\\ 32\end{tabular}}                        & \begin{tabular}[c]{@{}l@{}}23\\ 22\\ 21\end{tabular} & \begin{tabular}[c]{@{}l@{}}24\\ 20\\ 17\end{tabular} & \begin{tabular}[c]{@{}l@{}}25\\ 17\\ 17\end{tabular} \\ \bottomrule
         \end{tabular}
         \newline
-        \caption[Multiple Classes Per Thread Timing Examples]{Multiple Classes Per Thread Timing Examples, with pool size: 4, 16, 32 and classes per thread: 2, 3, 4}
+        \caption[Multiple classes per thread timing examples]{Multiple classes per thread timing examples, with pool size: 4, 16, 32 and classes per thread: 2, 3, 4}
         \end{table}
 
 
@@ -883,6 +883,7 @@ synchronized(predicateFile) {
 	        \caption{CSVDatabase.java}
 	        \end{figure}
 
+\clearpage
 	    \thesissubsubsection{Representation}
 	    	The other synchronization we had to provide was in three methods in the \texttt{Representation.java} file. Those methods were accessing and trying to retrieve some fields from a SootMethod object passed as an argument while threads were still active.
 	    	\begin{figure}[H]
@@ -910,6 +911,7 @@ lock.unlock();
 	        \caption{JimpleBodyPack.java}
 	        \end{figure}
 
+\clearpage
 	    \thesissubsubsection{Pack Manager}
 	    	As mentioned before, the groups of transformations (Soot names them \texttt{"packs"}) containing the various phases and their options are managed by the class \texttt{PackManager}. To ensure thread-safety, we used another lock which protects a group of transformations for retrieving Class Hierarchy Analysis. 
             \begin{figure}[H]
@@ -950,7 +952,7 @@ lock.unlock();
 \legend{Soot 2.5.0, Soot Latest Version, Fork/Join Framework, Thread/Methods, Thread/Class, Thread/Classes}
 \end{axis}
         \end{tikzpicture}
-        \caption{Fact Generation Time Results}
+        \caption{Fact-generation timing results}
     \end{figure}
 
     \begin{table}[H]
@@ -966,7 +968,7 @@ lock.unlock();
     batik             & 63                  & 34                 & 18                     & 17                    & 17                      \\ \bottomrule
     \end{tabular}
     \newline
-    \caption[Summarizing best times of all approaches]{Summarizing best times of all approaches with pool size 16-32}
+    \caption[Summarizing best timings of all approaches]{Summarizing best timings of all approaches with pool size 16-32}
     \end{table}
 
 
