@@ -595,8 +595,8 @@
 }
 
 \let\oldmaketitle\maketitle
-\renewcommand{\maketitle}{\oldmaketitle\setcounter{page}{3}}
-\newcommand{\maketitlesecond}{\maketitle\setcounter{page}{5}}
+\renewcommand{\maketitle}{\oldmaketitle\setcounter{page}{1}}
+\newcommand{\maketitlesecond}{\maketitle\setcounter{page}{3}}
 %%
 %% End of Format of the Title and Acceptance Pages
 %% ============================================================
